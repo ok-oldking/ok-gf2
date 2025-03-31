@@ -74,7 +74,7 @@ class DailyTask(BaseGfTask):
     def claim_quest(self):
         self.info_set('current_task', 'claim_quest')
         self.wait_click_ocr(match=['委托'], box='bottom_right', after_sleep=0.5, raise_if_not_found=True)
-        self.wait_click_ocr(match=['一键领取'], box='bottom', time_out=4,
+        self.wait_click_ocr(match=['一键领取', '领取全部'], box='bottom_right', time_out=3,
                             raise_if_not_found=False, after_sleep=2)
         # if results and results[0].name == '一键领取':
         results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='bottom_left')
@@ -98,7 +98,7 @@ class DailyTask(BaseGfTask):
         if self.wait_click_ocr(match=['巡录'], box='bottom', after_sleep=0.5, time_out=2, raise_if_not_found=False):
             self.wait_click_ocr(match=['沿途行动'], box='top_right', time_out=4,
                                 raise_if_not_found=True, after_sleep=1)
-            self.wait_click_ocr(match=['一键领取'], box='bottom_right', time_out=4,
+            self.wait_click_ocr(match=['一键领取', '领取全部'], box='bottom_right', time_out=4,
                                 raise_if_not_found=False, after_sleep=1)
             self.ensure_main()
 
@@ -134,7 +134,7 @@ class DailyTask(BaseGfTask):
         self.wait_click_ocr(match=pop_ups, box='bottom', after_sleep=0.5, raise_if_not_found=False)
         self.back()
         self.sleep(1)
-        if self.wait_click_ocr(match=['一键领取'], box='bottom', after_sleep=1, time_out=5):
+        if self.wait_click_ocr(match=['一键领取', '领取全部'], box='bottom', after_sleep=1, time_out=5):
             self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=1, raise_if_not_found=False)
         self.back()
         self.ensure_main()
@@ -152,8 +152,10 @@ class DailyTask(BaseGfTask):
 
     def arena(self):
         self.info_set('current_task', 'arena')
-        self.wait_click_ocr(match=['战役推进'], box='right', after_sleep=0.5, raise_if_not_found=True)
-        self.wait_click_ocr(match=['模拟作战'], box='top_right', after_sleep=0.5, raise_if_not_found=True)
+        self.wait_click_ocr(match=re.compile('战役推进'), box='top_right', after_sleep=1, raise_if_not_found=True)
+        self.wait_ocr(match=re.compile('战役推进'), box='top_right', raise_if_not_found=True)
+        self.sleep(1)
+        self.click_relative(0.89, 0.05)  # 模拟战斗
         self.wait_click_ocr(match=['实兵演习'], box='bottom', after_sleep=0.5, raise_if_not_found=True)
         self.wait_pop_up(time_out=15)
         remaining_count = self.arena_remaining()
@@ -172,16 +174,13 @@ class DailyTask(BaseGfTask):
 
     def bingqi(self):
         self.info_set('current_task', 'bingqi')
-        self.wait_click_ocr(match=['战役推进'], box='right', after_sleep=0.5, raise_if_not_found=True)
-        self.wait_click_ocr(match=['模拟作战'], box='top_right', after_sleep=0.5, raise_if_not_found=True)
-        if self.is_adb():
-            self.swipe_relative(0.8, 0.6, 0.5, 0.6, duration=1)
-            self.sleep(0.5)
-            self.wait_click_ocr(match=['兵棋推演'], box='bottom_right', after_sleep=0.5, raise_if_not_found=True)
-        else:
-            self.sleep(1)
-            self.click_relative(0.98, 0.49, after_sleep=0.5)
-        self.wait_ocr(match='防御阵容', box='right', time_out=30, post_action=lambda: self.click_relative(0.5, 0.5))
+        self.wait_click_ocr(match=re.compile('战役推进'), box='top_right', after_sleep=1, raise_if_not_found=True)
+        self.wait_ocr(match=re.compile('战役推进'), box='top_right', raise_if_not_found=True)
+        self.sleep(1)
+        self.click_relative(0.90, 0.05, after_sleep=0.95)  # 补给
+        self.click_relative(0.98, 0.49, after_sleep=0.52)
+        self.wait_ocr(match='防御阵容', box='right', time_out=30,
+                      post_action=lambda: self.click_relative(0.5, 0.5, after_sleep=2))
         while self.find_top_right_count():
             self.info_incr('bingqi')
             self.wait_click_ocr(match=['匹配'], box='bottom', after_sleep=0.5, raise_if_not_found=True)
@@ -353,8 +352,9 @@ class DailyTask(BaseGfTask):
 
     def battle(self):
         self.info_set('current_task', 'battle')
-        self.wait_click_ocr(match=['战役推进'], box='right', after_sleep=0.5, raise_if_not_found=True)
-        self.wait_click_ocr(match=['补给作战'], box='top', after_sleep=0.5, raise_if_not_found=True)
+        self.wait_click_ocr(match=re.compile('战役推进'), box='top_right', after_sleep=0.5, raise_if_not_found=True)
+        self.wait_ocr(match=re.compile('战役推进'), box='top_right', raise_if_not_found=True)
+        self.click_relative(0.78, 0.05)
         if self.is_adb():
             self.swipe_relative(0.8, 0.6, 0.5, 0.6, duration=1)
         self.sleep(1)

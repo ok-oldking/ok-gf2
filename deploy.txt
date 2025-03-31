@@ -7,3 +7,4 @@ main.py
 icon.png
 requirements.txt
 README.md
+i18n

@@ -28,7 +28,7 @@ msgid "军备解析"
 msgstr "Armament Analysis"
 
 msgid "冲锋"
-msgstr "Assault"
+msgstr "SMG & MG"
 
 msgid "决策构象"
 msgstr "Decision Configuration"
@@ -43,7 +43,7 @@ msgid "尘烟"
 msgstr "Dust Smoke"
 
 msgid "手枪"
-msgstr "Pistol"
+msgstr "HG"
 
 msgid "推图"
 msgstr "Clear Stages"
@@ -61,13 +61,13 @@ msgid "深度搜索"
 msgstr "Deep Search"
 
 msgid "狙击"
-msgstr "Sniper"
+msgstr "RF & BLD"
 
 msgid "班组"
 msgstr "Squad"
 
 msgid "突击"
-msgstr "Assault"
+msgstr "AR & SG"
 
 msgid "竞技场"
 msgstr "Arena"

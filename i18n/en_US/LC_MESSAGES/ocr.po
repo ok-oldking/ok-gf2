@@ -189,23 +189,43 @@ msgid "In-Depth Search"
 msgstr "深度搜索"
 
 # From stamina_options (used in config and potentially match)
-msgid "Cognitive Configuration"
+msgid "Cognitive"
 msgstr "决策构象"
 
 # From stamina_options (used in config and potentially match)
-msgid "Assault"
+msgid "AR & SG"
+msgstr "突击"
+
+msgid "AR&SG"
 msgstr "突击"
 
 # From stamina_options (used in config and potentially match)
-msgid "Charge"
+msgid "SMG & MG"
 msgstr "冲锋"
 
+msgid "SMG&MG"
+msgstr "冲锋"
+
+msgid "Next"
+msgstr "下一步"
+
+msgid "Back"
+msgstr "上一步"
+
+msgid "Click anywhere to continue"
+msgstr "点击任意位置继续"
+
+msgid "Clickanywhereto exit"
+msgstr "点击空白处关闭"
+
+msgid "RF&BLD"
+msgstr "狙击"
 # From stamina_options (used in config and potentially match)
-msgid "Sniper"
+msgid "RF & BLD"
 msgstr "狙击"
 
 # From stamina_options (used in config and potentially match)
-msgid "Handgun"
+msgid "HG"
 msgstr "手枪"
 
 # From activity_stamina: self.wait_click_ocr(match=['活动'], ...)
@@ -230,12 +250,18 @@ msgstr "委托"
 msgid "Claim All"
 msgstr "领取全部"
 
+msgid "ClaimAll"
+msgstr "领取全部"
+
 # From claim_quest: self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], ...)
-msgid "No Rewards to Claim"
+msgid "No Rewards Available"
 msgstr "无可领取报酬"
 
 # From claim_quest: self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], ...)
 msgid "All Claimed"
+msgstr "已全部领取"
+
+msgid "AllClaimed"
 msgstr "已全部领取"
 
 # From xunlu: self.wait_click_ocr(match=['巡录'], ...)
@@ -289,7 +315,7 @@ msgid "Shop"
 msgstr "商城"
 
 # From shopping: self.wait_click_ocr(match=['品质甄选'], ...)
-msgid "Quality Selection"
+msgid "Quality"
 msgstr "品质甄选"
 
 # From shopping: self.wait_click_ocr(match=['周期礼包', '常驻礼包'], ...)
@@ -304,15 +330,11 @@ msgstr "常驻礼包"
 msgid "Free"
 msgstr "免费"
 
-# From shopping: self.wait_click_ocr(match=['确认', '购买'], ...)
-msgid "Confirm"
-msgstr "购买"
-
 # From arena: self.wait_click_ocr(match=['战役推进'], ...)
 # From bingqi: self.wait_click_ocr(match=['战役推进'], ...)
 # From battle: self.wait_click_ocr(match=['战役推进'], ...)
-msgid "Campaign"
-msgstr "战役推进"
+msgid "战役推进"
+msgstr "Campaign"
 
 # From arena: self.wait_click_ocr(match=['模拟作战'], ...)
 # From bingqi: self.wait_click_ocr(match=['模拟作战'], ...)
@@ -336,7 +358,7 @@ msgstr "进攻"
 # Already translated: msgid "War Chess Simulation" -> msgstr "兵棋推演"
 
 # From bingqi: self.wait_ocr(match='防御阵容', ...)
-msgid "Defense Formation"
+msgid "Formation"
 msgstr "防御阵容"
 
 # From bingqi: self.wait_click_ocr(match=['匹配'], ...)
@@ -349,7 +371,7 @@ msgstr "匹配"
 
 # From guild: self.wait_click_ocr(match=['要务'], ...)
 # From guild: self.wait_ocr(match=['开始作战', '每日要务已完成', '要务'], ...)
-msgid "Essential tasks"
+msgid "Essential"
 msgstr "要务"
 
 # From guild: self.wait_ocr(match=['开始作战', '每日要务已完成'], ...)
@@ -363,7 +385,7 @@ msgstr "开始作战"
 # From guild: self.wait_ocr(match=['开始作战', '每日要务已完成'], ...)
 # From guild: self.log_info('每日要务已完成')
 # From guild: self.wait_ocr(match=['开始作战', '每日要务已完成', '要务'], ...)
-msgid "Daily Patrol has been accomplished"
+msgid "Daily Patrol has been"
 msgstr "每日要务已完成"
 
 # From guild: self.wait_click_ocr(match=['补给'], ...)
