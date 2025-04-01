@@ -153,7 +153,7 @@ class DailyTask(BaseGfTask):
     def arena(self):
         self.info_set('current_task', 'arena')
         self.wait_click_ocr(match=re.compile('战役推进'), box='top_right', after_sleep=1, raise_if_not_found=True)
-        self.wait_ocr(match=re.compile('战役推进'), box='top_right', raise_if_not_found=True)
+        self.wait_ocr(match=re.compile('补给作战'), box='top_right', raise_if_not_found=True)
         self.sleep(1)
         self.click_relative(0.89, 0.05)  # 模拟战斗
         self.wait_click_ocr(match=['实兵演习'], box='bottom', after_sleep=0.5, raise_if_not_found=True)
@@ -175,7 +175,7 @@ class DailyTask(BaseGfTask):
     def bingqi(self):
         self.info_set('current_task', 'bingqi')
         self.wait_click_ocr(match=re.compile('战役推进'), box='top_right', after_sleep=1, raise_if_not_found=True)
-        self.wait_ocr(match=re.compile('战役推进'), box='top_right', raise_if_not_found=True)
+        self.wait_ocr(match=re.compile('补给作战'), box='top_right', raise_if_not_found=True)
         self.sleep(1)
         self.click_relative(0.90, 0.05, after_sleep=0.95)  # 补给
         self.click_relative(0.98, 0.49, after_sleep=0.52)
@@ -353,7 +353,7 @@ class DailyTask(BaseGfTask):
     def battle(self):
         self.info_set('current_task', 'battle')
         self.wait_click_ocr(match=re.compile('战役推进'), box='top_right', after_sleep=0.5, raise_if_not_found=True)
-        self.wait_ocr(match=re.compile('战役推进'), box='top_right', raise_if_not_found=True)
+        self.wait_ocr(match=re.compile('补给作战'), box='top_right', raise_if_not_found=True)
         self.click_relative(0.78, 0.05)
         if self.is_adb():
             self.swipe_relative(0.8, 0.6, 0.5, 0.6, duration=1)

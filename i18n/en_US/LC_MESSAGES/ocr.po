@@ -336,6 +336,9 @@ msgstr "免费"
 msgid "战役推进"
 msgstr "Campaign"
 
+msgid "补给作战"
+msgstr "Supply Missions"
+
 # From arena: self.wait_click_ocr(match=['模拟作战'], ...)
 # From bingqi: self.wait_click_ocr(match=['模拟作战'], ...)
 msgid "Combat Simulations"
