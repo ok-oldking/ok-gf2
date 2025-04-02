@@ -86,8 +86,8 @@ class BaseGfTask(BaseTask):
             raise Exception('自动战斗异常')
         if results[0].name == '任务失败':
             raise Exception('任务失败, 没打过!')
-        if results[0].name != '战斗失败':
-            self.wait_click_ocr(match='确认', box='bottom_right', raise_if_not_found=False, time_out=5)
+        while self.wait_click_ocr(match='确认', box='bottom_right', raise_if_not_found=False, time_out=3):
+            pass
         if end_match:
             if isinstance(end_match, list):
                 end_match = end_match + pop_ups
