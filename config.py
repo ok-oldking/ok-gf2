@@ -40,19 +40,14 @@ config = {
     },
     'git_update': {'sources': [
         {
-            'name': '阿里云',
-            'git_url': 'https://e.coding.net/g-frfh1513/ok-wuthering-waves/ok-gf2.git',
+            'name': 'Global',
+            'git_url': 'https://github.com/ok-oldking/ok-gf2.git',
             'pip_url': 'https://mirrors.aliyun.com/pypi/simple'
         },
         {
             'name': 'China',
-            'git_url': 'https://e.coding.net/g-frfh1513/ok-wuthering-waves/ok-gf2.git',
+            'git_url': 'https://cnb.cool/ok-oldking/ok-gf2.git',
             'pip_url': 'https://mirrors.aliyun.com/pypi/simple'
-        },
-        {
-            'name': '腾讯云',
-            'git_url': 'https://e.coding.net/g-frfh1513/ok-wuthering-waves/ok-gf2.git',
-            'pip_url': 'https://mirrors.cloud.tencent.com/pypi/simple'
         },
     ]},
     'screenshots_folder': "screenshots",
