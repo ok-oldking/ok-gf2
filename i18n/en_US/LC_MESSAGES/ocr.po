@@ -92,8 +92,8 @@ msgid "Public Area"
 msgstr "公共区"
 
 # From is_main: self.ocr(match=['整备室', '公共区', '招募'], ...)
-msgid "Recruitment"
-msgstr "招募"
+msgid "招募"
+msgstr "Recruitment"
 
 # From is_main: self.ocr(..., match=["点击开始", "点击空白处关闭", "取消"], ...)
 msgid "Start"

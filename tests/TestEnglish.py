@@ -18,6 +18,12 @@ class TestBattleBaseSerialization(TaskTestCase):
         dates = self.task.find_activities()
         self.assertEqual(len(dates), 1)
 
+    def test_main(self):
+        # Create a BattleReport object
+        self.set_image('tests/images/english_main.png')
+        main = self.task.is_main()
+        self.assertTrue(main)
+
 
 if __name__ == '__main__':
     unittest.main()

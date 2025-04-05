@@ -105,7 +105,7 @@ class BaseGfTask(BaseTask):
         self.sleep(2)
 
     def is_main(self, recheck_time=0, esc=True):
-        boxes = self.ocr(match=['整备室', '公共区', '招募'], box='right')
+        boxes = self.ocr(match=['整备室', '公共区', re.compile('招募')], box='right', log=True)
         if len(boxes) == 3:
             if recheck_time:
                 self.sleep(recheck_time)
