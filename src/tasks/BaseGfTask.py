@@ -106,6 +106,7 @@ class BaseGfTask(BaseTask):
 
     def is_main(self, recheck_time=0, esc=True):
         boxes = self.ocr(match=['整备室', '公共区', re.compile('招募')], box='right', log=True)
+        self.log_info(f'is main {len(boxes)} {boxes}')
         if len(boxes) == 3:
             if recheck_time:
                 self.sleep(recheck_time)
@@ -118,8 +119,8 @@ class BaseGfTask(BaseTask):
             self.click(box, after_sleep=2)
             return False
         if esc:
-            self.back()
-            self.sleep(4)
+            if self.check_interval(2):
+                self.back()
         self.next_frame()
 
     def click(self, x=0, y=0, move_back=False, name=None, interval=-1, move=True,

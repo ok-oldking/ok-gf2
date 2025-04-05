@@ -24,6 +24,10 @@ class TestBattleBaseSerialization(TaskTestCase):
         main = self.task.is_main()
         self.assertTrue(main)
 
+        self.set_image('tests/images/english_main2.png')
+        main = self.task.is_main()
+        self.assertTrue(main)
+
 
 if __name__ == '__main__':
     unittest.main()
