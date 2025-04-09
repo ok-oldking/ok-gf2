@@ -91,6 +91,9 @@ msgstr "整备室"
 msgid "Public Area"
 msgstr "公共区"
 
+msgid "PublicArea"
+msgstr "公共区"
+
 # From is_main: self.ocr(match=['整备室', '公共区', '招募'], ...)
 msgid "招募"
 msgstr "Recruitment"
@@ -213,6 +216,9 @@ msgid "Back"
 msgstr "上一步"
 
 msgid "Click anywhere to continue"
+msgstr "点击任意位置继续"
+
+msgid "Click anywhere on the screen to continue"
 msgstr "点击任意位置继续"
 
 msgid "Clickanywhereto exit"
