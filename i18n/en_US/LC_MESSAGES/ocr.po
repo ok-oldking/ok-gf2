@@ -60,7 +60,7 @@ msgstr "行动结束"
 # From auto_battle: self.wait_ocr(match=['行动结束', re.compile('还有可部署')], ...)
 # Note: This was inside re.compile, but the string itself is Chinese used in match param
 msgid "还有可部署"
-msgstr "Units can still be deployed"
+msgstr "still deploy"
 
 # From auto_battle: self.skip_dialogs(end_match=['任务完成', ...], ...) -> used inside skip_dialogs
 msgid "Mission Completed"
@@ -115,12 +115,12 @@ msgstr "自律"
 # --- New Strings from ClearMapTask ---
 
 # From ClearMapTask: self.wait_ocr(box='right', match=["特殊奖励", '观看', '挑战'], ...)
-msgid "Special Reward"
+msgid "Exclusive Rewards"
 msgstr "特殊奖励"
 
 # From ClearMapTask: self.wait_ocr(box='right', match=["特殊奖励", '观看', '挑战'], ...)
 # From ClearMapTask: self.find_boxes(boxes, match=['观看', '挑战'])
-msgid "Watch"
+msgid "View"
 msgstr "观看"
 
 # From ClearMapTask: self.wait_ocr(box='right', match=["特殊奖励", '观看', '挑战'], ...)
@@ -184,7 +184,7 @@ msgid "Mail"
 msgstr "邮件"
 
 # From stamina_options (used in config and potentially match)
-msgid "Equipment Analysis"
+msgid "Analysis"
 msgstr "军备解析"
 
 # From stamina_options (used in config and potentially match)
@@ -314,6 +314,9 @@ msgstr "收取"
 # From gongongqu: self.wait_click_ocr(match=['再次派遣'], ...)
 # From text_fix: '再次派造': '再次派遣'
 msgid "Dispatch Again"
+msgstr "再次派遣"
+
+msgid "Resend"
 msgstr "再次派遣"
 
 # From shopping: self.wait_click_ocr(match=['商城'], ...)

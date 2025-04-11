@@ -9,9 +9,12 @@ config = {
     'wait_until_check_delay': 0,
     'wait_until_settle_time': 0.5,
     'ocr': {
-        'lib': 'rapidocr',
+        'lib': 'rapidocr_openvino',
         'target_height': 1080,
-        'log_debug': True,
+        'params': {
+            'Global.with_openvino': True,
+            'EngineConfig.openvino.inference_num_threads': 1,
+        }
     },
     'windows': {  # required  when supporting windows game
         'exe': 'GF2_Exilium.exe',

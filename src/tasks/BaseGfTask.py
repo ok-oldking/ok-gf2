@@ -55,7 +55,7 @@ class BaseGfTask(BaseTask):
             self.click_box(result, after_sleep=1)
             start_result = self.wait_ocr(match=['行动结束', re.compile('还有可部署')],
                                          raise_if_not_found=True, time_out=30)
-            if '还有可部署' in start_result[0].name:
+            if '行动结束' != start_result[0].name:
                 self.log_info('阵容没上满!', notify=True)
 
                 self.wait_click_ocr(match=['确认'], box='bottom', time_out=5,
