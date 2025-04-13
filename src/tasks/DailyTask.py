@@ -250,9 +250,10 @@ class DailyTask(BaseGfTask):
                 if len(existing) == 4:
                     break
 
-        self.wait_click_ocr(match='助战', box='bottom_right', after_sleep=0.5, raise_if_not_found=True)
-        self.wait_click_ocr(match='火力', box='top_right', after_sleep=2, raise_if_not_found=True)
-        priority = ['可露凯', '妮基塔', '绛雨', '玛绮朵', '琼玖', '托洛洛']
+        self.wait_click_ocr(match='助战', box='bottom_right', settle_time=1, after_sleep=0.5, raise_if_not_found=True)
+        self.wait_click_ocr(match='火力', box='top_right', settle_time=1, after_sleep=2, raise_if_not_found=True)
+        priority = ['可露凯', '妮基塔', '莱娅', '绛雨', '玛绮朵', '琼玖', '托洛洛', 'jiangyu', 'klukai', 'leva',
+                    'nikketa', 'Makiatto', 'qiongjiu', 'tololo']
         chars = self.ocr(0.18, 0.27, 0.82, 0.79, match=re.compile(r'^\D*$'))
         my_chars = []
         sorted_chars = sort_characters_by_priority(chars, priority)
@@ -406,7 +407,7 @@ def sort_characters_by_priority(chars, priority):
     sorted_chars = []
 
     for i, the_char in enumerate(chars):  # Use enumerate to get the original index
-        char_name = the_char.name
+        char_name = the_char.name.lower()
         if char_name in priority_map:
             sorted_chars.append((priority_map[char_name], i, the_char))  # (priority_index, original_index, char_object)
         else:

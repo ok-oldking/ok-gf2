@@ -1,3 +1,7 @@
+import os
+
+from ok import get_path_relative_to_exe
+
 version = "v5.0.11"
 
 config = {
@@ -9,11 +13,12 @@ config = {
     'wait_until_check_delay': 0,
     'wait_until_settle_time': 0.5,
     'ocr': {
-        'lib': 'rapidocr_openvino',
+        'lib': 'rapidocr',
         'target_height': 1080,
         'params': {
             'Global.with_openvino': True,
             'EngineConfig.openvino.inference_num_threads': 1,
+            'Rec.rec_keys_path': get_path_relative_to_exe(os.path.join('assets', 'ppocr_keys_v1.txt')),
         }
     },
     'windows': {  # required  when supporting windows game

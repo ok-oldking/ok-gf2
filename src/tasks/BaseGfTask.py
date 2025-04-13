@@ -133,7 +133,7 @@ class BaseGfTask(BaseTask):
 
     def back(self, after_sleep=0):
         frame = self.frame
-        self.send_key('esc', down_time=0.04)
+        self.send_key('esc', down_time=0.04, after_sleep=after_sleep)
         if self.debug:
             self.screenshot('back', frame=frame)
 

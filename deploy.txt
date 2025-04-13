@@ -8,3 +8,4 @@ icon.png
 requirements.txt
 README.md
 i18n
+assets
