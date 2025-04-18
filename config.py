@@ -48,11 +48,6 @@ config = {
     },
     'git_update': {'sources': [
         {
-            'name': 'Global',
-            'git_url': 'https://github.com/ok-oldking/ok-gf2.git',
-            'pip_url': 'https://mirrors.aliyun.com/pypi/simple'
-        },
-        {
             'name': 'China',
             'git_url': 'https://cnb.cool/ok-oldking/ok-gf2.git',
             'pip_url': 'https://mirrors.aliyun.com/pypi/simple'
