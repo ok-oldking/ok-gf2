@@ -15,7 +15,7 @@ class ClearMapTask(BaseGfTask):
         count = 0
         clicked = []
         while True:
-            maps = self.ocr(box=self.box_of_screen(0, 0.2, 1, 0.8), match=map_re, log=True)
+            maps = self.ocr(box=self.box_of_screen(0, 0.2, 1, 0.8), match=map_re, log=True, threshold=0.5)
             maps = sorted(maps, key=lambda obj: obj.x)
             self.log_debug('maps: {}'.format(maps))
             if len(maps) == 0:
