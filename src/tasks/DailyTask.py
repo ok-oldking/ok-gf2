@@ -237,23 +237,26 @@ class DailyTask(BaseGfTask):
                 break
             self.wait_click_ocr(match='攻坚战', box='top_right', after_sleep=0.5, raise_if_not_found=True)
             self.wait_click_ocr(match='开始作战', box='bottom_right', after_sleep=2, raise_if_not_found=True)
-            self.choose_chenyan()
+            self.choose_chenyan(tickets)
             self.sleep(2)
             result = self.ocr(0.89, 0.01, 0.99, 0.1, match=stamina_re, box='top_right')
         self.back(after_sleep=2)
 
-    def choose_chenyan(self):
-        existing = self.ocr(box='bottom_right', match=re.compile(r"^\d+$"))
-        if len(existing) < 4:
-            for exist in existing:
-                self.click_box(exist, after_sleep=0.1)
-            chars = self.ocr(box=self.box_of_screen(0.01, 0.38, 0.54, 0.9), match=re.compile(r"^\d+$"))
-            chars = sorted(chars, key=lambda obj: int(obj.name), reverse=True)
-            for c in chars:
-                self.click_box(c, after_sleep=0.01)
-                existing = self.ocr(box='bottom_right', match=re.compile(r"^\d+$"))
-                if len(existing) == 4:
-                    break
+    def choose_chenyan(self, tickets):
+        existing = self.ocr(box=self.box_of_screen(0.61, 0.69, 0.88, 0.83), match=re.compile(r"^\d+$"))
+        for exist in existing:
+            self.click_box(exist, after_sleep=0.1)
+        self.click_relative(0.28, 0.35, after_sleep=0.2)
+        self.click_relative(0.21, 0.64, after_sleep=0.2)
+        self.click_relative(0.28, 0.35, after_sleep=0.2)
+        if tickets == 2:
+            self.click_relative(0.16, 0.47, after_sleep=0.2)  # 编队1
+        else:
+            self.click_relative(0.16, 0.56, after_sleep=0.2)  # 编队2
+        x_start = 0.06
+        step = (0.24 - 0.03) / 3
+        for i in range(4):
+            self.click_relative(x_start + step * i, 0.45, after_sleep=0.2)
 
         self.wait_click_ocr(match='助战', box='bottom_right', settle_time=1, after_sleep=0.5, raise_if_not_found=True)
         self.wait_click_ocr(match='火力', box='top_right', settle_time=1, after_sleep=2, raise_if_not_found=True)
