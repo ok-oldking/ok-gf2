@@ -147,12 +147,12 @@ class DailyTask(BaseGfTask):
         if self.wait_click_ocr(match=['免费'], box='top_left', after_sleep=0.5, raise_if_not_found=False, time_out=4):
             self.log_info('found free item to buy')
             self.wait_click_ocr(match=['确认', '购买'], box='bottom', after_sleep=1.5, raise_if_not_found=True)
-            self.wait_click_ocr(match=pop_ups, box='bottom', after_sleep=0.5, raise_if_not_found=False)
+            self.wait_click_ocr(match=pop_ups, box='bottom', after_sleep=2, raise_if_not_found=False)
         self.wait_click_ocr(match=['限时礼包'], box='top', after_sleep=0.5, raise_if_not_found=True)
         if self.wait_click_ocr(match=['免费'], box='left', after_sleep=0.5, raise_if_not_found=False, time_out=4):
             self.log_info('found free item to buy')
             self.wait_click_ocr(match=['确认', '购买'], box='bottom', after_sleep=1.5, raise_if_not_found=True)
-            self.wait_click_ocr(match=pop_ups, box='bottom', after_sleep=0.5, raise_if_not_found=False)
+            self.wait_click_ocr(match=pop_ups, box='bottom', after_sleep=2, raise_if_not_found=False)
         self.ensure_main()
 
     def arena(self):
