@@ -101,6 +101,8 @@ class BaseGfTask(BaseTask):
                     continue
                 if match:
                     self.log_info(f'battle end matched: {match}')
+                    if match[0].name == "确认":
+                        self.click_box(match, after_sleep=8)
                     break
         self.sleep(2)
 
