@@ -46,6 +46,9 @@ config = {
         'min_size': (1280, 720),
         'resize_to': [(2560, 1440), (1920, 1080), (1280, 720)]
     },
+    'analytics': {
+        'report_url': 'http://report.ok-script.cn:8080/report',
+    },
     'git_update': {'sources': [
         {
             'name': 'Global',
