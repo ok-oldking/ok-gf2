@@ -9,3 +9,4 @@ requirements.txt
 README.md
 i18n
 assets
+ok.yaml
