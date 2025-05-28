@@ -13,7 +13,7 @@ jobs:
           filetype: latest-release
           filename: "ok-gf2-*.7z"
           p7zip: true
-          mirrorchyan_rid: okww
+          mirrorchyan_rid: okgf2
 
           github_token: ${{ secrets.GITHUB_TOKEN }}
           owner: ok-oldking
