@@ -54,22 +54,21 @@ class BaseGfTask(BaseTask):
             self.sleep(2)
             self.click_box(result, after_sleep=1)
             start_result = self.wait_ocr(match=['行动结束', re.compile('还有可部署')],
-                                         raise_if_not_found=False, time_out=5)
+                                         raise_if_not_found=False, time_out=15)
             if start_result and '行动结束' != start_result[0].name:
                 self.log_info('阵容没上满!', notify=True)
 
                 self.wait_click_ocr(match=['确认'], box='bottom', time_out=5,
                                     raise_if_not_found=True)
 
-                self.wait_ocr(match=['行动结束'], box='bottom_right',
-                              raise_if_not_found=False, time_out=30)
-
-            self.sleep(0.5)
-
-        if self.is_adb():
-            self.click_relative(0.85, 0.05, after_sleep=1)
-        else:
-            self.click_relative(0.88, 0.04, after_sleep=1)
+                start_result = self.wait_ocr(match=['行动结束'], box='bottom_right',
+                                             raise_if_not_found=False, time_out=15)
+            if start_result:
+                self.sleep(0.5)
+                if self.is_adb():
+                    self.click_relative(0.85, 0.05, after_sleep=1)
+                else:
+                    self.click_relative(0.88, 0.04, after_sleep=1)
 
         while results := self.skip_dialogs(
                 end_match=['任务完成', '任务失败', '战斗失败', '对战胜利', '对战失败', '确认'], time_out=900,
