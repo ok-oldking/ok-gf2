@@ -1,10 +1,18 @@
-1. 直接使用PC版少前2, 可后台
-2. 游戏帧率越高越好, 推荐120, 支持所有16:9分辨率, 自动HDR必须关闭, 可以使用RTX HDR
-3. 仅支持游戏语言为简体中文
-4. 一键兵棋推演, 活动体力扫荡, 竞技场, 尘烟, 要务
-5. QQ群1033950808 进群答案: 老王同学OK
+### PC版少前2, 一键长草, 兵棋推演, 活动体力扫荡, 竞技场, 尘烟, 要务
 
-* 点击[releases](https://github.com/ok-oldking/ok-gf2/releases), 下载7z压缩包(200M左右的), 解压缩双击运行.exe
+1. 直接使用PC版少前2, 可原生后台运行
+2. 游戏帧率越高越好, 推荐120, 支持所有16:9分辨率, windows自动HDR必须关闭, 可以使用RTX HDR
+3. 仅支持游戏语言为简体中文
+4. QQ群1033950808 进群答案: 老王同学OK
+
+### 下载绿色版7z解压包, 解压后双击ok-gf2.exe, 下载后可应用内更新
+
+* [GitHub下载](https://github.com/ok-oldking/ok-wuthering-waves/releases), 免费网页直链, 不要点击下载Source Code,
+  点击下载7z压缩包
+* [Mirror酱下载渠道](https://mirrorchyan.com/zh/projects?rid=okww), 国内网页直链, 下载需要购买CD-KEY,
+  已有Mirror酱CD-KEY可免费下载
+* [夸克网盘](https://pan.quark.cn/s/a1052cec4d13), 免费, 但需要注册并下载夸克网盘客户端
+* 加入QQ频道后, 讨论组下载 [https://pd.qq.com/s/djmm6l44y](https://pd.qq.com/s/djmm6l44y)
 
 ![image](https://github.com/user-attachments/assets/6bd2ac34-fd40-4c74-9e8e-a0343818876d)
 
