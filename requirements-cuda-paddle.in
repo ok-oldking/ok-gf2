@@ -1,3 +1,5 @@
+--extra-index-url https://www.paddlepaddle.org.cn/packages/stable/cu126
+
 pySide6-Fluent-Widgets
 pycaw==20240210
 psutil==6.1.0
@@ -11,6 +13,6 @@ requests==2.32.3
 pip-tools
 pydirectinput==1.0.4
 mouse==0.7.1
-rapidocr
-onnxruntime-directml
-
+paddlepaddle_gpu==3.0.0
+paddleocr==3.0.0
+pandas==2.2.3

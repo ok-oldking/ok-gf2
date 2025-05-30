@@ -10,7 +10,5 @@ README.md
 i18n
 assets
 ok.yml
-main_direct_ml_debug.py
-main_direct_ml.py
-requirements-direct-ml.txt
-requirements-direct-ml.in
+main_cuda_paddle.py
+requirements-cuda-paddle.txt

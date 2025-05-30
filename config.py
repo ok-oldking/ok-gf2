@@ -11,7 +11,7 @@ config = {
     'gui_icon': 'icon.png',
     'wait_until_before_delay': 0,  # default 1 , for wait_until() function
     'wait_until_check_delay': 0,
-    'wait_until_settle_time': 0.5,
+    'wait_until_settle_time': 0,
     'ocr': {
         'lib': 'rapidocr',
         'target_height': 1080,

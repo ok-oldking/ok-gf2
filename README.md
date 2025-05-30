@@ -17,3 +17,18 @@
 ![image](https://github.com/user-attachments/assets/6bd2ac34-fd40-4c74-9e8e-a0343818876d)
 
 ![image](https://github.com/user-attachments/assets/ae1ecd07-6608-478d-9226-40d4f8000a60)
+
+### Python 源码运行
+
+```
+#CPU版本, 使用openvino
+pip install -r requirements.txt --upgrade #install python dependencies, 更新代码后可能需要重新运行
+python main.py # run the release version
+python main_debug.py # run the debug version
+```
+
+```
+#CUDA版本, 使用paddle-gpu加速, 推荐N卡30系以上使用, 速度飞快, 但是将会增加1GB硬盘占用空间
+pip install -r requirements-direct-ml.txt --upgrade #install python dependencies, 更新代码后可能需要重新运行
+python main_direct_ml.py # run the release version
+```
