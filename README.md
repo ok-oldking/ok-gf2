@@ -5,7 +5,12 @@
 3. 仅支持游戏语言为简体中文
 4. QQ群1033950808 进群答案: 老王同学OK
 
-### 下载绿色版7z解压包, 解压后双击ok-gf2.exe, 下载后可应用内更新
+
+![image](https://github.com/user-attachments/assets/6bd2ac34-fd40-4c74-9e8e-a0343818876d)
+
+![image](https://github.com/user-attachments/assets/ae1ecd07-6608-478d-9226-40d4f8000a60)
+
+### 绿色免安装版, 解压后双击ok-gf2.exe, 下载后可应用内更新
 
 * [GitHub下载](https://github.com/ok-oldking/ok-wuthering-waves/releases), 免费网页直链, 不要点击下载Source Code,
   点击下载7z压缩包
@@ -14,9 +19,6 @@
 * [夸克网盘](https://pan.quark.cn/s/a1052cec4d13), 免费, 但需要注册并下载夸克网盘客户端
 * 加入QQ频道后, 讨论组下载 [https://pd.qq.com/s/djmm6l44y](https://pd.qq.com/s/djmm6l44y)
 
-![image](https://github.com/user-attachments/assets/6bd2ac34-fd40-4c74-9e8e-a0343818876d)
-
-![image](https://github.com/user-attachments/assets/ae1ecd07-6608-478d-9226-40d4f8000a60)
 
 ### Python 源码运行
 
