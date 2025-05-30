@@ -14,14 +14,14 @@ class DailyTask(BaseGfTask):
         self.description = "收菜"
         self.default_config.update({
             '体力本': "军备解析",
-            '活动情报补给': True,
+            '活动情报补给': False,
             '活动自律': True,
             '公共区': True,
             '购买免费礼包': True,
             '自动刷体力': True,
             '刷钱本': True,
             '竞技场': True,
-            '兵棋推演': True,
+            '兵棋推演': False,
             '班组': True,
             '尘烟': True,
             '领任务': True,
