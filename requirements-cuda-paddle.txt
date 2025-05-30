@@ -6,7 +6,7 @@
 #
 --extra-index-url https://www.paddlepaddle.org.cn/packages/stable/cu126
 
-ok-script==0.0.570
+ok-script==0.0.572
     # via -r .\requirements-cuda-paddle.in
 
 aiohappyeyeballs==2.6.1
