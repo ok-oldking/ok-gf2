@@ -232,7 +232,7 @@ paddlepaddle-gpu==3.0.0
     # via -r .\requirements-cuda-paddle.in
 paddlex[ie,multimodal,ocr]==3.0.0
     # via paddleocr
-pandas==2.2.3
+pandas==1.5.3
     # via paddlex
 pillow==11.2.1
     # via
