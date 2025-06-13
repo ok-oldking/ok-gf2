@@ -51,9 +51,9 @@ numpy==2.2.4
     #   onnxruntime-directml
     #   opencv-python
     #   shapely
-ok-script==0.0.576
+ok-script==0.0.577
     # via -r .\requirements.in
-onnxocr-ppocrv5==0.0.2
+onnxocr-ppocrv4==0.0.2
     # via -r .\requirements.in
 onnxruntime-directml==1.22.0
     # via -r .\requirements.in
