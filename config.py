@@ -13,13 +13,7 @@ config = {
     'wait_until_check_delay': 0,
     'wait_until_settle_time': 0,
     'ocr': {
-        'lib': 'rapidocr',
-        'target_height': 1080,
-        'params': {
-            'Global.with_openvino': True,
-            'EngineConfig.openvino.inference_num_threads': 1,
-            'Rec.rec_keys_path': get_path_relative_to_exe(os.path.join('assets', 'ppocr_keys_v1.txt')),
-        }
+        'lib': 'onnxocr'
     },
     'windows': {  # required  when supporting windows game
         'exe': 'GF2_Exilium.exe',

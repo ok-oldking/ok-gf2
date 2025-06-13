@@ -11,5 +11,6 @@ requests==2.32.3
 pip-tools
 pydirectinput==1.0.4
 mouse==0.7.1
-rapidocr
+onnxocr-ppocrv5
+pillow
 onnxruntime-directml

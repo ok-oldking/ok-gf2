@@ -328,7 +328,7 @@ class DailyTask(BaseGfTask):
                 self.log_info(f'challenge arena complete {remaining_count}')
                 break
             boxes = self.ocr(0, 0.51, 0.94, 0.59, match=re.compile(r"^[1-9]\d*$"))
-            if len(boxes) != 5:
+            if len(boxes) < 3:
                 if not waited_pop_up:
                     waited_pop_up = True
                     self.wait_pop_up(time_out=15) and self.wait_pop_up(time_out=15) and self.wait_pop_up(time_out=15)
