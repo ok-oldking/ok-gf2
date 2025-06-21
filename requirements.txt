@@ -4,6 +4,7 @@
 #
 #    pip-compile '.\requirements.in'
 #
+--index-url https://mirrors.aliyun.com/pypi/simple
 
 build==1.2.2.post1
     # via pip-tools

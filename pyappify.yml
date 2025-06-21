@@ -1,0 +1,14 @@
+requires_python: "3.12"
+uac: true
+profiles:
+  - name: "正式版(国内源)"
+    main_script: "main.py"
+    admin: true
+    requirements: "requirements.txt"
+    # PYTHONPATH: "your/default/path" # Optional, will be "" if missing
+  - name: "Debug版(国内源)"
+    main_script: "main_debug.py"
+    # admin will default to false
+    # requirements will default to ""
+    # PYTHONPATH will default to ""
+
