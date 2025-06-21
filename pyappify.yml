@@ -1,9 +1,11 @@
-requires_python: "3.12"
+name: "ok-gf2"
 uac: true
 profiles:
   - name: "正式版(国内源)"
-    main_script: "main.py"
+    git_url: "https://cnb.cool/ok-oldking/ok-gf2.git"
     admin: true
+    main_script: "main.py"
+    requires_python: "3.12"
     requirements: "requirements.txt"
     # PYTHONPATH: "your/default/path" # Optional, will be "" if missing
   - name: "Debug版(国内源)"
@@ -11,4 +13,3 @@ profiles:
     # admin will default to false
     # requirements will default to ""
     # PYTHONPATH will default to ""
-
