@@ -1,5 +1,5 @@
 name: "ok-gf2"
-#uac: true
+uac: true
 profiles:
   - name: "Release"
     git_url: "https://cnb.cool/ok-oldking/ok-gf2.git"
