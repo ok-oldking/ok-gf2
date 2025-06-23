@@ -34,7 +34,8 @@ class ClearMapTask(BaseGfTask):
             if not checked:
                 self.log_info(f'推图完成, 共{count}个!', notify=True)
                 return
-            if boxes := self.wait_ocr(box='right', match=["特殊奖励", '观看', '挑战'], time_out=3, log=True):
+            self.sleep(1)
+            if boxes := self.wait_ocr(box="right", match=["特殊奖励", '观看', '挑战'], time_out=3, log=True):
                 # self.log_debug(f'特殊奖励 {boxes}')
                 if self.find_boxes(boxes, match=["特殊奖励", '观看']):
                     text = self.find_boxes(boxes, match=['观看', '挑战'])
