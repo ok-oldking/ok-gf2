@@ -8,8 +8,3 @@ profiles:
     requires_python: "3.12"
     requirements: "requirements.txt"
     # PYTHONPATH: "your/default/path" # Optional, will be "" if missing
-  - name: "Debug"
-    main_script: "main_debug.py"
-    # admin will default to false
-    # requirements will default to ""
-    # PYTHONPATH will default to ""

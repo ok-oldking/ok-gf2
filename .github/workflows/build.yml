@@ -87,14 +87,6 @@ jobs:
         id: build-app
         uses: ok-oldking/pyappify-action@master
 
-      - name: List files in pyappify_dist
-        if: always() # Run this even if prior steps failed, for better debugging
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Contents of pyappify_dist:"
-          ls -R pyappify_dist || dir pyappify_dist # Use dir for Windows if ls isn't available/configured
-        shell: bash
-
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
@@ -102,7 +94,7 @@ jobs:
           draft: true
           body: |
             ### 下载绿色版7z解压包, 解压后双击ok-gf2.exe, 下载后可应用内更新, 其他下载链接              
-              * [Mirror酱下载渠道](https://mirrorchyan.com/zh/projects?rid=okgf2), 国内网页直链, 下载需要购买CD-KEY,
+              * [Mirror酱下载渠道](https://mirrorchyan.com/zh/projects?rid=okgf2&source=okgf2release), 国内网页直链, 下载需要购买CD-KEY,
                 已有Mirror酱CD-KEY可免费下载
               * [夸克网盘](https://pan.quark.cn/s/a1052cec4d13), 免费, 但需要注册并下载夸克网盘客户端
           files: pyappify_dist/*
