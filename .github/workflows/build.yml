@@ -79,9 +79,9 @@ jobs:
               python -m unittest $_.FullName
           }
 
-      #      - name: push to cnb
-      #        run: |
-      #          python -m ok.update.push_repos --repos https://cnb:${{ secrets.CNB_TOKEN }}@cnb.cool/ok-oldking/ok-gf2.git --files deploy.txt --tag ${{ steps.tagName.outputs.tag }}
+      - name: push to cnb
+        run: |
+          python -m ok.update.push_repos --repos https://cnb:${{ secrets.CNB_TOKEN }}@cnb.cool/ok-oldking/ok-gf2.git --files deploy.txt --tag ${{ steps.tagName.outputs.tag }}
 
       - name: Build with PyAppify Action
         id: build-app
@@ -99,11 +99,11 @@ jobs:
               * [夸克网盘](https://pan.quark.cn/s/a1052cec4d13), 免费, 但需要注册并下载夸克网盘客户端
           files: pyappify_dist/*
 
-#      - name: Trigger MirrorChyanUploading
-#        if: startsWith(github.ref, 'refs/tags/')
-#        shell: bash
-#        run: |
-#          gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_uploading
-#          gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_release_note
-#        env:
-#          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Trigger MirrorChyanUploading
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_uploading
+          gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_release_note
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

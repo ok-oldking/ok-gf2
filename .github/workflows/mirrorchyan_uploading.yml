@@ -11,8 +11,7 @@ jobs:
       - uses: MirrorChyan/uploading-action@v1
         with:
           filetype: latest-release
-          filename: "ok-gf2-*.7z"
-          p7zip: true
+          filename: "pyappify_dist/ok-gf2-win32-CPU.zip"
           mirrorchyan_rid: okgf2
 
           github_token: ${{ secrets.GITHUB_TOKEN }}
