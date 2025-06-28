@@ -9,6 +9,6 @@ requirements.txt
 README.md
 i18n
 assets
-ok.yml
-main_cuda_paddle.py
-requirements-cuda-paddle.txt
+pyappify.yml
+main_direct_ml.py
+requirements-dml.txt
