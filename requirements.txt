@@ -4,6 +4,9 @@
 #
 #    pip-compile --index-url=https://pypi.org/simple '.\requirements.in'
 #
+ok-script==0.0.587
+    # via -r .\requirements.in
+onnxocr-ppocrv4==0.0.5
 build==1.2.2.post1
     # via pip-tools
 certifi==2025.1.31
@@ -42,9 +45,6 @@ numpy==2.2.4
     #   opencv-python
     #   openvino
     #   shapely
-ok-script==0.0.586
-    # via -r .\requirements.in
-onnxocr-ppocrv4==0.0.5
     # via -r .\requirements.in
 opencv-python==4.11.0.86
     # via -r .\requirements.in
