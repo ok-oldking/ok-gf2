@@ -1,7 +1,3 @@
-import os
-
-from ok import get_path_relative_to_exe
-
 version = "v5.0.11"
 
 config = {
@@ -13,7 +9,10 @@ config = {
     'wait_until_check_delay': 0,
     'wait_until_settle_time': 0,
     'ocr': {
-        'lib': 'onnxocr'
+        'lib': 'onnxocr',
+        'params': {
+            'use_openvino': True,
+        }
     },
     'windows': {  # required  when supporting windows game
         'exe': 'GF2_Exilium.exe',

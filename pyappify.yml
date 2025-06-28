@@ -1,10 +1,15 @@
 name: "ok-gf2"
 uac: true
 profiles:
-  - name: "Release"
+  - name: "CPU"
     git_url: "https://cnb.cool/ok-oldking/ok-gf2.git"
     admin: true
     main_script: "main.py"
     requires_python: "3.12"
     requirements: "requirements.txt"
+    # PYTHONPATH: "your/default/path" # Optional, will be "" if missing
+
+  - name: "GPU"
+    main_script: "main_direct_ml.py"
+    requirements: "requirements-dml.txt"
     # PYTHONPATH: "your/default/path" # Optional, will be "" if missing
