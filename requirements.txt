@@ -4,7 +4,9 @@
 #
 #    pip-compile '.\requirements.in'
 #
---index-url https://mirrors.aliyun.com/pypi/simple
+
+ok-script==0.0.584
+pyappify==0.0.3
 
 build==1.2.2.post1
     # via pip-tools
@@ -52,7 +54,8 @@ numpy==2.2.4
     #   onnxruntime-directml
     #   opencv-python
     #   shapely
-ok-script==0.0.577
+
+
     # via -r .\requirements.in
 onnxocr-ppocrv4==0.0.4
     # via -r .\requirements.in
