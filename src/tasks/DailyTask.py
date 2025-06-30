@@ -19,7 +19,7 @@ class DailyTask(BaseGfTask):
             '公共区': True,
             '购买免费礼包': True,
             '自动刷体力': True,
-            '刷钱本': True,
+            '刷钱本': False,
             '竞技场': True,
             '兵棋推演': False,
             '班组': True,
