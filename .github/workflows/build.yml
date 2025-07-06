@@ -62,16 +62,6 @@ jobs:
         run: |
           python -m ok.update.copy_ok_folder
 
-      - name: Rename .py files to .pyx
-        run: |
-          Get-ChildItem -Path .\src -Recurse -Filter *.py -Exclude '__init__.py' | ForEach-Object { Rename-Item $_.FullName -NewName ($_.FullName -replace '\.py$', '.pyx') }
-
-      - name: build cython
-        run: |
-          python setup.py build_ext --inplace
-          Get-ChildItem -Path .\src -Recurse -Filter *.pyx | ForEach-Object { Remove-Item $_.FullName }
-          Get-ChildItem -Path .\src -Recurse -Filter *.cpp | ForEach-Object { Remove-Item $_.FullName }
-
       - name: Run tests
         run: |
           Get-ChildItem -Path ".\tests\*.py" | ForEach-Object {

@@ -12,3 +12,4 @@ assets
 pyappify.yml
 main_direct_ml.py
 requirements-dml.txt
+.gitignore
