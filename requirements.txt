@@ -7,7 +7,7 @@
 ok-script==0.0.594
     # via -r .\requirements.in
 onnxocr-ppocrv4==0.0.5
-pyappify==0.0.4
+pyappify==1.0.1
     # via ok-script
 build==1.2.2.post1
     # via pip-tools
