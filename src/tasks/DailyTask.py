@@ -18,6 +18,7 @@ class DailyTask(BaseGfTask):
             '活动自律': True,
             '公共区': True,
             '购买免费礼包': True,
+            '购买调度商店': True,
             '自动刷体力': True,
             '刷钱本': False,
             '竞技场': True,
@@ -145,16 +146,33 @@ class DailyTask(BaseGfTask):
         self.wait_click_ocr(match=['商城'], box='bottom_right', after_sleep=0.5, raise_if_not_found=True)
         self.wait_click_ocr(match=['品质甄选'], box='top_left', after_sleep=0.5, raise_if_not_found=True)
         self.wait_click_ocr(match=['周期礼包', '常驻礼包'], box='top', after_sleep=0.5, raise_if_not_found=True)
-        if self.wait_click_ocr(match=['免费'], box='top_left', after_sleep=0.5, raise_if_not_found=False, time_out=4):
+        if self.wait_click_ocr(match=['免费'], after_sleep=0.5, raise_if_not_found=False, time_out=1):
             self.log_info('found free item to buy')
             self.wait_click_ocr(match=['确认', '购买'], box='bottom', after_sleep=1.5, raise_if_not_found=True)
-            self.wait_pop_up(time_out=5)
+            self.wait_pop_up(time_out=5, count=1)
         self.wait_click_ocr(match=['限时礼包'], box='top', after_sleep=0.5, raise_if_not_found=True)
-        if self.wait_click_ocr(match=['免费'], box='left', after_sleep=0.5, raise_if_not_found=False, time_out=4):
+        if self.wait_click_ocr(match=['免费'], box='left', after_sleep=0.5, raise_if_not_found=False, time_out=1):
             self.log_info('found free item to buy')
             self.wait_click_ocr(match=['确认', '购买'], box='bottom', after_sleep=1.5, raise_if_not_found=True)
-            self.wait_pop_up(time_out=5)
+            self.wait_pop_up(time_out=5, count=1)
+        if self.config.get('购买调度商店'):
+            self.buy_diaodu()
         self.ensure_main()
+
+    def buy_diaodu(self):
+        self.info_set('current_task', '调度商店')
+        self.wait_click_ocr(match=['易物所'], box='left', after_sleep=0.5, raise_if_not_found=True)
+        self.wait_click_ocr(match=['调度商店'], box='left', after_sleep=1, raise_if_not_found=True)
+        while True:
+            buy = self.ocr(match=re.compile("周限购[1-9]\d*"))
+            if not buy:
+                return
+            self.click(buy[0], after_sleep=0.5)
+            max = self.ocr(match="最大", box="bottom_right")
+            if max:
+                self.click(max[0], after_sleep=0.5)
+            self.wait_click_ocr(match="购买", box="bottom_right", time_out=1, raise_if_not_found=True)
+            self.wait_pop_up(time_out=5, count=1)
 
     def arena(self):
         self.info_set('current_task', 'arena')
