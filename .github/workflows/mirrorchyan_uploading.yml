@@ -12,6 +12,7 @@ jobs:
         with:
           filetype: latest-release
           filename: "ok-gf2-win32-CPU-setup.exe"
+          extra_zip: true
           mirrorchyan_rid: okgf2
 
           github_token: ${{ secrets.GITHUB_TOKEN }}
