@@ -8,7 +8,7 @@ logger = Logger.get_logger(__name__)
 pop_ups = ['点击空白处关闭', '点击屏幕任意位置继续', '点击任意位置继续']
 number_re = re.compile(r"^\d+$")
 stamina_re = re.compile(r"^\d+/\d+")
-map_re = re.compile('-?\d{1,2}-\d{1,2}\*?')
+map_re = re.compile(r'-?\d{1,2}-\d{1,2}\*?')
 
 
 class BaseGfTask(BaseTask):

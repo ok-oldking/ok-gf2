@@ -164,7 +164,7 @@ class DailyTask(BaseGfTask):
         self.wait_click_ocr(match=['易物所'], box='left', after_sleep=0.5, raise_if_not_found=True)
         self.wait_click_ocr(match=['调度商店'], box='left', after_sleep=1, raise_if_not_found=True)
         while True:
-            buy = self.ocr(match=re.compile("周限购[1-9]\d*"))
+            buy = self.ocr(match=re.compile(r"周限购[1-9]\d*"))
             if not buy:
                 return
             self.click(buy[0], after_sleep=0.5)

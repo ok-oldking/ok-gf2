@@ -4,9 +4,10 @@
 #
 #    pip-compile --index-url=https://pypi.org/simple '.\requirements-dml.in'
 #
-ok-script==0.0.600
-    # via -r .\requirements.in
+ok-script==0.0.604
+    # via -r requirements.in
 onnxocr-ppocrv4==0.0.5
+    # via -r requirements.in
 pyappify==1.0.2
     # via ok-script
 build==1.2.2.post1
