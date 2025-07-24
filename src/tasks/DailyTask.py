@@ -151,7 +151,7 @@ class DailyTask(BaseGfTask):
             self.wait_click_ocr(match=['确认', '购买'], box='bottom', after_sleep=1.5, raise_if_not_found=True)
             self.wait_pop_up(time_out=5, count=1)
         self.wait_click_ocr(match=['限时礼包'], box='top', after_sleep=0.5, raise_if_not_found=True)
-        if self.wait_click_ocr(match=['免费'], box='left', after_sleep=0.5, raise_if_not_found=False, time_out=1):
+        if self.wait_click_ocr(match=['免费'], after_sleep=0.5, raise_if_not_found=False, time_out=1):
             self.log_info('found free item to buy')
             self.wait_click_ocr(match=['确认', '购买'], box='bottom', after_sleep=1.5, raise_if_not_found=True)
             self.wait_pop_up(time_out=5, count=1)
@@ -162,7 +162,7 @@ class DailyTask(BaseGfTask):
     def buy_diaodu(self):
         self.info_set('current_task', '调度商店')
         self.wait_click_ocr(match=['易物所'], box='left', after_sleep=0.5, raise_if_not_found=True)
-        self.wait_click_ocr(match=['调度商店'], box='left', after_sleep=1, raise_if_not_found=True)
+        self.wait_click_ocr(match=['调度商店'], after_sleep=1, raise_if_not_found=True)
         while True:
             buy = self.ocr(match=re.compile(r"周限购[1-9]\d*"))
             if not buy:
