@@ -16,7 +16,7 @@ class DailyTask(BaseGfTask):
             '体力本': "军备解析",
             '活动情报补给': False,
             '活动自律': True,
-            '公共区': True,
+            '公共区/调度室': True,
             '购买免费礼包': True,
             '购买调度商店': True,
             '自动刷体力': True,
@@ -42,7 +42,7 @@ class DailyTask(BaseGfTask):
             self.activity_stamina()
         if self.config.get('活动自律'):
             self.activity()
-        if self.config.get('公共区'):
+        if self.config.get('公共区/调度室'):
             self.gongongqu()
         if self.config.get('购买免费礼包'):
             self.shopping()
@@ -75,10 +75,14 @@ class DailyTask(BaseGfTask):
     def claim_quest(self):
         self.info_set('current_task', 'claim_quest')
         self.wait_click_ocr(match=['委托'], box='bottom_right', after_sleep=0.5, raise_if_not_found=True)
-        self.wait_click_ocr(match=['一键领取', '领取全部'], box='bottom_right', time_out=3,
-                            raise_if_not_found=False, after_sleep=2)
-        # if results and results[0].name == '一键领取':
-        results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='bottom_left')
+        if self.wait_click_ocr(match=['一键领取', '领取全部'], box='bottom_right', time_out=3,
+                               raise_if_not_found=False, after_sleep=2):
+            results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='bottom_left')
+        else:
+            self.wait_click_ocr(match=['一键领取', '领取全部'], box='left', time_out=3,
+                                raise_if_not_found=False, after_sleep=2)
+            results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='left')
+            # if results and results[0].name == '一键领取':
         if results[0].name == '领取全部':
             self.click(results[0])
             self.wait_pop_up(time_out=4)
@@ -126,8 +130,11 @@ class DailyTask(BaseGfTask):
 
     def gongongqu(self):
         self.info_set('current_task', 'public area')
-        self.wait_click_ocr(match=['公共区'], box='right', after_sleep=0.5, raise_if_not_found=True)
-        self.wait_click_ocr(match=['调度室'], box='left', settle_time=0.5, after_sleep=0.5, raise_if_not_found=True)
+        if self.wait_click_ocr(match=['公共区'], box='right', after_sleep=0.5, raise_if_not_found=False):
+            self.wait_click_ocr(match=['调度室'], box='left', settle_time=0.5, after_sleep=0.5, raise_if_not_found=True)
+        else:
+            self.wait_click_ocr(match=['委托'], box='right', after_sleep=0.5, raise_if_not_found=True)
+            self.wait_click_ocr(match=['前往'], box='left', settle_time=0.5, after_sleep=0.5, raise_if_not_found=True)
         self.wait_click_ocr(match=['调度收益'], box='bottom', after_sleep=0.5, raise_if_not_found=True)
         self.wait_click_ocr(match=['取出'], box='bottom', after_sleep=0.5, raise_if_not_found=True)
         self.wait_click_ocr(match=['资源生产'], box='left', after_sleep=0.5, raise_if_not_found=True)
