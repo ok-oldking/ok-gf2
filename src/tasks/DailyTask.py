@@ -76,7 +76,7 @@ class DailyTask(BaseGfTask):
         self.info_set('current_task', 'claim_quest')
         self.wait_click_ocr(match=['委托'], box='bottom_right', after_sleep=0.5, raise_if_not_found=True)
         self.wait_click_ocr(match=['一键领取', '领取全部'], box='bottom_right', time_out=3,
-                               raise_if_not_found=False, after_sleep=2)
+                            raise_if_not_found=False, after_sleep=2)
         results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='bottom_left')
         if len(results) == 0:
             results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='left')
@@ -109,8 +109,8 @@ class DailyTask(BaseGfTask):
         self.info_set('current_task', 'activity')
         if self.wait_click_ocr(match=['限时开启'], box='top_right', after_sleep=0.5, raise_if_not_found=False,
                                time_out=4):
-            if activities := self.find_activities():
-                self.click(activities[0])
+            if latest_activity := self.find_latest_activity():
+                self.click(latest_activity)
                 if to_click := self.wait_ocr(match=['活动战役', re.compile('物资')], box='bottom',
                                              raise_if_not_found=False, time_out=4, settle_time=2, log=True):
                     self.click(to_click, after_sleep=2)
@@ -126,6 +126,22 @@ class DailyTask(BaseGfTask):
         return self.wait_ocr(match=[re.compile(r'^\d+天\d+小时')], box='bottom_left',
                              raise_if_not_found=False, time_out=4)
 
+    def find_latest_activity(self):
+        boxs = self.find_activities()
+
+        def parse_time(name):
+            match = re.match(r'^(\d+)天(\d+)小时', name)
+            if match:
+                days = int(match.group(1))
+                hours = int(match.group(2))
+                return days * 24 + hours
+            return 0
+
+        if not boxs:
+            return None
+        longest = max(boxs, key=lambda b: parse_time(b.name))
+        return longest
+
     def gongongqu(self):
         self.info_set('current_task', 'public area')
         if self.wait_click_ocr(match=['公共区'], box='right', after_sleep=0.5, raise_if_not_found=False):
@@ -138,7 +154,7 @@ class DailyTask(BaseGfTask):
             self.back()
             self.sleep(1)
             self.wait_click_ocr(match=['一键领取', '领取全部'], settle_time=0.5, box='bottom_right', after_sleep=1,
-                                   time_out=5)
+                                time_out=5)
 
         else:
             self.wait_click_ocr(match=['委托'], box='right', after_sleep=0.5, raise_if_not_found=True)
