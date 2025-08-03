@@ -75,13 +75,11 @@ class DailyTask(BaseGfTask):
     def claim_quest(self):
         self.info_set('current_task', 'claim_quest')
         self.wait_click_ocr(match=['委托'], box='bottom_right', after_sleep=0.5, raise_if_not_found=True)
-        if self.wait_click_ocr(match=['一键领取', '领取全部'], time_out=3,
-                               raise_if_not_found=False, after_sleep=2):
-            results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'])
-        else:
-            self.wait_click_ocr(match=['一键领取', '领取全部'], time_out=3,
-                                raise_if_not_found=False, after_sleep=2)
-            results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'])
+        self.wait_click_ocr(match=['一键领取', '领取全部'], box='bottom_right', time_out=3,
+                               raise_if_not_found=False, after_sleep=2)
+        results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='bottom_left')
+        if len(results) == 0:
+            results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='left')
             # if results and results[0].name == '一键领取':
         if results[0].name == '领取全部':
             self.click(results[0])
@@ -144,12 +142,15 @@ class DailyTask(BaseGfTask):
 
         else:
             self.wait_click_ocr(match=['委托'], box='right', after_sleep=0.5, raise_if_not_found=True)
+            self.sleep(1)
             self.click(0.184, 0.524)
             self.sleep(1)
             self.click(0.042, 0.541)
+            self.sleep(1)
             self.click(0.184, 0.583)
             self.sleep(1)
             self.click(0.042, 0.541)
+            self.sleep(1)
             self.click(0.184, 0.643)
             self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=1, raise_if_not_found=False)
         self.back()
