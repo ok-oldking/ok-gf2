@@ -75,12 +75,10 @@ class DailyTask(BaseGfTask):
     def claim_quest(self):
         self.info_set('current_task', 'claim_quest')
         self.wait_click_ocr(match=['委托'], box='bottom_right', after_sleep=0.5, raise_if_not_found=True)
-        if self.wait_click_ocr(match=['一键领取', '领取全部'], box='bottom_right', time_out=3,
-                               raise_if_not_found=False, after_sleep=2):
-            results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='bottom_left')
-        else:
-            self.wait_click_ocr(match=['一键领取', '领取全部'], box='left', time_out=3,
-                                raise_if_not_found=False, after_sleep=2)
+        self.wait_click_ocr(match=['一键领取', '领取全部'], box='bottom_right', time_out=3,
+                               raise_if_not_found=False, after_sleep=2)
+        results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='bottom_left')
+        if len(results) == 0:
             results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='left')
             # if results and results[0].name == '一键领取':
         if results[0].name == '领取全部':
