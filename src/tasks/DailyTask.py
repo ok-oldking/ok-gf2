@@ -144,12 +144,14 @@ class DailyTask(BaseGfTask):
 
         else:
             self.wait_click_ocr(match=['委托'], box='right', after_sleep=0.5, raise_if_not_found=True)
+            self.sleep(1)
             self.click(0.184, 0.524)
             self.sleep(1)
             self.click(0.042, 0.541)
             self.click(0.184, 0.583)
             self.sleep(1)
             self.click(0.042, 0.541)
+            self.sleep(1)
             self.click(0.184, 0.643)
             self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=1, raise_if_not_found=False)
         self.back()
