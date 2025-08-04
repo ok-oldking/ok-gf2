@@ -111,9 +111,23 @@ class DailyTask(BaseGfTask):
                                time_out=4):
             if latest_activity := self.find_latest_activity():
                 self.click(latest_activity)
-                if to_click := self.wait_ocr(match=['活动战役', re.compile('物资')], box='bottom',
+                to_clicks=None
+                if to_clicks := self.wait_ocr(match=["战术补给·下篇","战术补给·上篇"], box='right',
                                              raise_if_not_found=False, time_out=4, settle_time=2, log=True):
-                    self.click(to_click, after_sleep=2)
+                    to_clicks2= None
+                    for click in to_clicks:
+                        if "下篇" in click.name:
+                            self.click(click)
+                            break
+                        else:
+                            to_clicks2= click
+                    if to_clicks2:
+                        self.sleep(1)
+                        self.click(to_clicks2)
+                elif to_clicks := self.wait_ocr(match=['活动战役', re.compile('物资')], box='bottom',
+                                                raise_if_not_found=False, time_out=4, settle_time=2, log=True):
+                    self.click(to_clicks, after_sleep=2)
+                if to_clicks:
                     if wuzi := self.ocr(match=re.compile('物资'), box='bottom_right'):
                         self.click(wuzi, after_sleep=0.5)
                     battles = self.wait_ocr(match=map_re, time_out=4)
