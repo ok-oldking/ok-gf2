@@ -167,8 +167,9 @@ class DailyTask(BaseGfTask):
             self.wait_pop_up(count=1)
             self.back()
             self.sleep(1)
-            self.wait_click_ocr(match=['一键领取', '领取全部'], settle_time=0.5, box='bottom_right', after_sleep=1,
-                                time_out=5)
+            if self.wait_click_ocr(match=['一键领取', '领取全部'], settle_time=0.5, box='bottom_right', after_sleep=1,
+                                   time_out=5):
+                self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=1, raise_if_not_found=False)
         else:
             self.wait_click_ocr(match=['委托'], box='right', after_sleep=0.5, raise_if_not_found=True)
             self.sleep(1)
