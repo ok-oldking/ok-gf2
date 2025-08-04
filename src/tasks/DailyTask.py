@@ -175,6 +175,8 @@ class DailyTask(BaseGfTask):
             self.sleep(1)
             self.click(0.184, 0.524)
             self.sleep(1)
+            self.wait_click_ocr(match=['确认'], after_sleep=0.5, raise_if_not_found=True)
+            self.sleep(1)
             self.click(0.042, 0.541)
             self.sleep(1)
             self.click(0.184, 0.583)
