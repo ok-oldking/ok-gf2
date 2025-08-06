@@ -219,6 +219,8 @@ class DailyTask(BaseGfTask):
             if max:
                 self.click(max[0], after_sleep=0.5)
             self.wait_click_ocr(match="购买", box="bottom_right", time_out=1, raise_if_not_found=True)
+            if self.wait_ocr(match=re.compile(r"派遣记录不足")):
+                break
             self.wait_pop_up(time_out=5, count=1)
 
     def arena(self):
