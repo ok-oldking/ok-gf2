@@ -47,6 +47,4 @@ class ClearMapTask(BaseGfTask):
                         self.skip_dialogs(end_match=map_re)
                 else:
                     self.back()
-            else:
-                self.back()
             self.sleep(1)
