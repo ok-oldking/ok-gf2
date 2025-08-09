@@ -189,7 +189,7 @@ class BaseGfTask(BaseTask):
             self.info_incr('click_battle_plus')
             self.sleep(0.2)
         self.sleep(1)
-        remaining = current - self.find_cost()
+        remaining = current - can_fast_count*cost
         self.info_set('remaining_stamina', remaining)
         if can_fast_count > 0:
             self.click(find_boxes_by_name(boxes, "确认"))
