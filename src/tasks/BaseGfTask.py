@@ -164,8 +164,6 @@ class BaseGfTask(BaseTask):
             default_cost = 30
         current = self.find_boxes(boxes, match=[stamina_re, number_re],
                                   boundary=self.box_of_screen(0.84, 0, 0.99, 0.10))
-        if activity:
-            current = 3
         if current:
             current = int(current[0].name.split('/')[0])
         else:
