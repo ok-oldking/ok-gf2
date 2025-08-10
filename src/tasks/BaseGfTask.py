@@ -166,10 +166,10 @@ class BaseGfTask(BaseTask):
                                   boundary=self.box_of_screen(0.84, 0, 0.99, 0.10))
         if current:
             current = int(current[0].name.split('/')[0])
+        elif activity:
+            current = 3
         else:
             current = 1
-        if activity:
-            current = 3
         if len(find_boxes_by_name(boxes, ["确认", "取消", "上一步"])) != 2:
             if self.debug:
                 self.screenshot('fast_no_zilv')
