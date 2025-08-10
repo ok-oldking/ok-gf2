@@ -131,7 +131,7 @@ class DailyTask(BaseGfTask):
                     battles = self.wait_ocr(match=map_re, time_out=4)
                     if battles:
                         self.click(battles[-1])
-                        self.fast_combat(6, default_cost=1)
+                        self.fast_combat(6, default_cost=1,activity=True)
         self.ensure_main()
 
     def find_activities(self):
