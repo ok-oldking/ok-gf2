@@ -18,7 +18,7 @@ class DailyTask(BaseGfTask):
             '活动自律': True,
             '公共区/调度室': True,
             '购买免费礼包': True,
-            '购买调度商店': True,
+            '购买调度商店': False,
             '自动刷体力': True,
             '刷钱本': False,
             '竞技场': True,
