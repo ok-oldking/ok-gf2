@@ -107,7 +107,7 @@ class DailyTask(BaseGfTask):
 
     def activity(self):
         self.info_set('current_task', 'activity')
-        if self.wait_click_ocr(match=['限时开启'], box='top_right', after_sleep=0.5, raise_if_not_found=False,
+        if self.wait_click_ocr(match=re.compile('限时开启'), box='top_right', after_sleep=0.5, raise_if_not_found=False,
                                time_out=4):
             if activities := self.find_activities():
                 self.click(activities[0])
