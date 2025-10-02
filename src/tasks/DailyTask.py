@@ -29,8 +29,9 @@ class DailyTask(BaseGfTask):
             '大月卡': True,
             '邮件': True,
         })
-        self.stamina_options = ['军备解析', '深度搜索', '决策构象', '突击', '冲锋',
-                                '狙击', '手枪']
+        # self.stamina_options = ['军备解析', '深度搜索', '决策构象', '突击', '冲锋',
+        #                         '狙击', '手枪']
+        self.stamina_options = ['军备解析', '深度搜索', '决策构象', '定向']
         self.config_type["体力本"] = {'type': "drop_down",
                                       'options': self.stamina_options}
         self.add_exit_after_config()
@@ -111,7 +112,7 @@ class DailyTask(BaseGfTask):
                 self.click(latest_activity)
                 to_clicks=None
                 if to_clicks := self.wait_ocr(match=["战术补给·下篇","战术补给·上篇"], box='right',
-                                             raise_if_not_found=False, time_out=4, settle_time=2, log=True):
+                                             raise_if_not_found=False, time_out=6, settle_time=2, log=True):
                     to_clicks2= None
                     for click in to_clicks:
                         if "下篇" in click.name:
@@ -197,19 +198,12 @@ class DailyTask(BaseGfTask):
     def buy_diaodu(self):
         self.info_set('current_task', '调度商店')
         self.wait_click_ocr(match=['易物所'], box='left', after_sleep=0.5, raise_if_not_found=True)
+        self.click(0.055, 0.946)
+        self.sleep(1)
         self.wait_click_ocr(match=['调度商店'], after_sleep=1, raise_if_not_found=True)
-        while True:
-            buy = self.ocr(match=re.compile(r"周限购[1-9]\d*"))
-            if not buy:
-                return
-            self.click(buy[0], after_sleep=0.5)
-            max = self.ocr(match="最大", box="bottom_right")
-            if max:
-                self.click(max[0], after_sleep=0.5)
-            self.wait_click_ocr(match=[re.compile("^购买$")], box="bottom_right", time_out=1, raise_if_not_found=True)
-            if self.wait_ocr(match=re.compile(r"派遣记录不足")):
-                break
-            self.wait_pop_up(time_out=5, count=1)
+        self.wait_click_ocr(match="一键购买", box="bottom_right", time_out=1, raise_if_not_found=True)
+        self.wait_click_ocr(match='购买',  after_sleep=1, raise_if_not_found=False)
+        self.wait_pop_up(time_out=5, count=1)
 
     def arena(self):
         self.info_set('current_task', 'arena')
@@ -434,12 +428,12 @@ class DailyTask(BaseGfTask):
             if ding_xiang:
                 target = '定向精研'
             self.wait_click_ocr(match=target, settle_time=1, after_sleep=0.5, raise_if_not_found=True, log=True)
-            if ding_xiang:
-                self.wait_click_ocr(match=re.compile(self.config.get('体力本')),
-                                    box=self.box_of_screen(0.01, 0.21, 0.73, 0.31),
-                                    settle_time=0.5,
-                                    after_sleep=0.5, log=True,
-                                    raise_if_not_found=True)
+            # if ding_xiang:
+            #     self.wait_click_ocr(match=re.compile(self.config.get('体力本')),
+            #                         box=self.box_of_screen(0.01, 0.21, 0.73, 0.31),
+            #                         settle_time=0.5,
+            #                         after_sleep=0.5, log=True,
+            #                         raise_if_not_found=True)
             while remaining >= min_stamina:
                 if ding_xiang:
                     remaining = self.fast_combat(plus_x=0.69, plus_y=0.59)
