@@ -201,7 +201,7 @@ class DailyTask(BaseGfTask):
         self.click(0.055, 0.946)
         self.sleep(1)
         self.wait_click_ocr(match=['调度商店'], after_sleep=1, raise_if_not_found=True)
-        self.wait_click_ocr(match="一键购买", box="bottom_right", time_out=1, raise_if_not_found=True)
+        self.wait_click_ocr(match="一键购买", box="bottom_right", time_out=1, raise_if_not_found=False)
         self.wait_click_ocr(match='购买',  after_sleep=1, raise_if_not_found=False)
         self.wait_pop_up(time_out=5, count=1)
 
