@@ -170,7 +170,8 @@ class BaseGfTask(BaseTask):
             current = 3
         else:
             current = 1
-        if len(find_boxes_by_name(boxes, ["确认", "取消", "上一步"])) != 2:
+        self.sleep(1)
+        if len(find_boxes_by_name(boxes, ["确认", "取消", "上一步"])) != 2 and len(find_boxes_by_name(boxes, ["确认", "取消", "上","一步"])) != 3:
             if self.debug:
                 self.screenshot('fast_no_zilv')
             self.log_info("自律没有弹窗, 可能是调度权限不足")
