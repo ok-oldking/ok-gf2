@@ -111,7 +111,7 @@ class DailyTask(BaseGfTask):
             if latest_activity := self.find_latest_activity():
                 self.click(latest_activity)
                 to_clicks=None
-                if to_clicks := self.wait_ocr(match=["战术补给·下篇","战术补给·上篇"], box='right',
+                if to_clicks := self.wait_ocr(match=["^.{4}·(上篇|下篇)$"], box='right',
                                              raise_if_not_found=False, time_out=6, settle_time=2, log=True):
                     to_clicks2= None
                     for click in to_clicks:
@@ -159,17 +159,17 @@ class DailyTask(BaseGfTask):
         self.info_set('current_task', 'public area')
         self.wait_click_ocr(match=['委托'], box='right', after_sleep=0.5, raise_if_not_found=True)
         self.sleep(1)
-        self.click(0.184, 0.524)
-        self.sleep(1)
-        self.wait_click_ocr(match=['确认'], after_sleep=0.5, raise_if_not_found=True)
-        self.sleep(1)
-        self.click(0.042, 0.541)
-        self.sleep(1)
-        self.click(0.184, 0.583)
+        self.click(0.184, 0.519)
+        # self.sleep(1)
+        # self.wait_click_ocr(match=['确认'], after_sleep=0.5, raise_if_not_found=True)
         self.sleep(1)
         self.click(0.042, 0.541)
         self.sleep(1)
-        self.click(0.184, 0.643)
+        self.click(0.184, 0.539)
+        self.sleep(1)
+        self.click(0.042, 0.541)
+        self.sleep(1)
+        self.click(0.184, 0.598)
         self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=1, raise_if_not_found=False)
         self.back()
         self.ensure_main()
