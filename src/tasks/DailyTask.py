@@ -128,32 +128,21 @@ class DailyTask(BaseGfTask):
 
     def gongongqu(self):
         self.info_set('current_task', 'public area')
-        if self.wait_click_ocr(match=['公共区'], box='right', after_sleep=0.5, raise_if_not_found=False):
-            self.wait_click_ocr(match=['调度室'], box='left', settle_time=0.5, after_sleep=0.5, raise_if_not_found=True)
-            self.wait_click_ocr(match=['调度收益'], box='bottom', after_sleep=0.5, raise_if_not_found=True)
-            self.wait_click_ocr(match=['取出'], box='bottom', after_sleep=0.5, raise_if_not_found=True)
-            self.wait_click_ocr(match=['资源生产'], box='left', after_sleep=0.5, raise_if_not_found=True)
-            self.wait_click_ocr(match=['收取'], box='bottom', after_sleep=0.5, raise_if_not_found=True)
-            self.wait_pop_up(count=1)
-            self.back()
+        self.wait_click_ocr(match=['委托'], box='right', after_sleep=0.5, raise_if_not_found=True)
+        self.sleep(1)
+        self.click(0.184, 0.519)
+        if self.wait_ocr(match=['最小'], time_out=4, settle_time=2, log=True):
             self.sleep(1)
-            if self.wait_click_ocr(match=['一键领取', '领取全部'], settle_time=0.5, box='bottom_right', after_sleep=1,
-                                   time_out=5):
-                self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=1, raise_if_not_found=False)
-
-        else:
-            self.wait_click_ocr(match=['委托'], box='right', after_sleep=0.5, raise_if_not_found=True)
-            self.sleep(1)
-            self.click(0.184, 0.519)
-            self.sleep(1)
-            self.click(0.042, 0.541)
-            self.sleep(1)
-            self.click(0.184, 0.539)
-            self.sleep(1)
-            self.click(0.042, 0.541)
-            self.sleep(1)
-            self.click(0.184, 0.598)
-            self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=1, raise_if_not_found=False)
+            self.wait_click_ocr(match=['确认'], after_sleep=0.5, raise_if_not_found=True)
+        self.sleep(1)
+        self.click(0.042, 0.541)
+        self.sleep(1)
+        self.click(0.184, 0.539)
+        self.sleep(1)
+        self.click(0.042, 0.541)
+        self.sleep(1)
+        self.click(0.184, 0.598)
+        self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=1, raise_if_not_found=False)
         self.back()
         self.ensure_main()
 
