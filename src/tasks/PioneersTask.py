@@ -26,33 +26,29 @@ class PioneersTask(BaseGfTask):
         return rc_die
 
     def function_a(self):
-        print("执行主函数A逻辑（占位）")
+        result=self.wait_ocr(match=["^.{4}<UNK>(<UNK>|<UNK>)$"], box='right')
+        if result[0].name=="开拓结束":
+            return True
+        return False
 
     def function_b(self):
         print("执行主函数B逻辑（占位）")
-    def main(self):
-        """主函数：包含A、B两部分逻辑"""
+    def use_die(self,rc_die):
+        if rc_die > 0:
+            # 优先执行遥控骰逻辑
+            rc_die = self.use_rc_die(rc_die)
+            # 遥控骰执行完后调用主函数
+        else:
+            # 遥控骰耗尽后，执行指令骰逻辑
+            self.use_cmd_die()
+        return rc_die
 
-
-
-        # 调用主函数逻辑部分
-        self.function_a()
-        self.function_b()
 
     def run(self):
         """核心死循环逻辑"""
-        rc_die = 3  # 遥控骰：可消耗
-
+        rc_die = 3
         while True:
-            if rc_die > 0:
-                # 优先执行遥控骰逻辑
-                rc_die = self.use_rc_die(rc_die)
-                # 遥控骰执行完后调用主函数
-                self.main()
-            else:
-                # 遥控骰耗尽后，执行指令骰逻辑
-                self.use_cmd_die()
-                # 指令骰执行完后调用主函数
-                self.main()
+            rc_die = self.use_die(rc_die)
+            if self.function_a():
+                break
 
-            # 退出条件示例（可修改）
