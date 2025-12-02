@@ -160,8 +160,9 @@ class DailyTask(BaseGfTask):
         self.wait_click_ocr(match=['委托'], box='right', after_sleep=0.5, raise_if_not_found=True)
         self.sleep(1)
         self.click(0.184, 0.478)
-        # self.sleep(1)
-        # self.wait_click_ocr(match=['确认'], after_sleep=0.5, raise_if_not_found=True)
+        if self.wait_ocr(match=['最小'], time_out=4, settle_time=2, log=True):
+            self.sleep(1)
+            self.wait_click_ocr(match=['确认'], after_sleep=0.5, raise_if_not_found=True)
         self.sleep(1)
         self.click(0.042, 0.541)
         self.sleep(1)
