@@ -29,8 +29,9 @@ class DailyTask(BaseGfTask):
             '大月卡': True,
             '邮件': True,
         })
-        self.stamina_options = ['军备解析', '深度搜索', '决策构象', '突击', '冲锋',
-                                '狙击', '手枪']
+        # self.stamina_options = ['军备解析', '深度搜索', '决策构象', '突击', '冲锋',
+        #                         '狙击', '手枪']
+        self.stamina_options = ['军备解析', '深度搜索', '决策构象', '定向']
         self.config_type["体力本"] = {'type': "drop_down",
                                       'options': self.stamina_options}
         self.add_exit_after_config()
@@ -76,10 +77,8 @@ class DailyTask(BaseGfTask):
         self.info_set('current_task', 'claim_quest')
         self.wait_click_ocr(match=['委托'], box='bottom_right', after_sleep=0.5, raise_if_not_found=True)
         self.wait_click_ocr(match=['一键领取', '领取全部'], box='bottom_right', time_out=3,
-                               raise_if_not_found=False, after_sleep=2)
-        results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='bottom_left')
-        if len(results) == 0:
-            results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='left')
+                            raise_if_not_found=False, after_sleep=2)
+        results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='left')
             # if results and results[0].name == '一键领取':
         if results[0].name == '领取全部':
             self.click(results[0])
@@ -109,51 +108,70 @@ class DailyTask(BaseGfTask):
         self.info_set('current_task', 'activity')
         if self.wait_click_ocr(match=re.compile('限时开启'), box='top_right', after_sleep=0.5, raise_if_not_found=False,
                                time_out=4):
-            if activities := self.find_activities():
-                self.click(activities[0])
-                if to_click := self.wait_ocr(match=['活动战役', re.compile('物资')], box='bottom',
-                                             raise_if_not_found=False, time_out=4, settle_time=2, log=True):
-                    self.click(to_click, after_sleep=2)
+            if latest_activity := self.find_latest_activity():
+                self.click(latest_activity)
+                to_clicks=None
+                if to_clicks := self.wait_ocr(match=["^.{4}·(上篇|下篇)$"], box='right',
+                                             raise_if_not_found=False, time_out=6, settle_time=2, log=True):
+                    to_clicks2= None
+                    for click in to_clicks:
+                        if "下篇" in click.name:
+                            self.click(click)
+                            break
+                        else:
+                            to_clicks2= click
+                    if to_clicks2:
+                        self.sleep(1)
+                        self.click(to_clicks2)
+                elif to_clicks := self.wait_ocr(match=['活动战役', re.compile('物资')], box='bottom',
+                                                raise_if_not_found=False, time_out=4, settle_time=2, log=True):
+                    self.click(to_clicks, after_sleep=2)
+                if to_clicks:
                     if wuzi := self.ocr(match=re.compile('物资'), box='bottom_right'):
                         self.click(wuzi, after_sleep=0.5)
                     battles = self.wait_ocr(match=map_re, time_out=4)
                     if battles:
                         self.click(battles[-1])
-                        self.fast_combat(6, default_cost=1)
+                        self.fast_combat(6, default_cost=1,activity=True)
         self.ensure_main()
 
     def find_activities(self):
         return self.wait_ocr(match=[re.compile(r'^\d+天\d+小时')], box='bottom_left',
                              raise_if_not_found=False, time_out=4)
 
+    def find_latest_activity(self):
+        boxs = self.find_activities()
+
+        def parse_time(name):
+            match = re.match(r'^(\d+)天(\d+)小时', name)
+            if match:
+                days = int(match.group(1))
+                hours = int(match.group(2))
+                return days * 24 + hours
+            return 0
+
+        if not boxs:
+            return None
+        longest = max(boxs, key=lambda b: parse_time(b.name))
+        return longest
+
     def gongongqu(self):
         self.info_set('current_task', 'public area')
-        if self.wait_click_ocr(match=['公共区'], box='right', after_sleep=0.5, raise_if_not_found=False):
-            self.wait_click_ocr(match=['调度室'], box='left', settle_time=0.5, after_sleep=0.5, raise_if_not_found=True)
-            self.wait_click_ocr(match=['调度收益'], box='bottom', after_sleep=0.5, raise_if_not_found=True)
-            self.wait_click_ocr(match=['取出'], box='bottom', after_sleep=0.5, raise_if_not_found=True)
-            self.wait_click_ocr(match=['资源生产'], box='left', after_sleep=0.5, raise_if_not_found=True)
-            self.wait_click_ocr(match=['收取'], box='bottom', after_sleep=0.5, raise_if_not_found=True)
-            self.wait_pop_up(count=1)
-            self.back()
+        self.wait_click_ocr(match=['委托'], box='right', after_sleep=0.5, raise_if_not_found=True)
+        self.sleep(1)
+        self.click(0.184, 0.478)
+        if self.wait_ocr(match=['最小'], time_out=4, settle_time=2, log=True):
             self.sleep(1)
-            if self.wait_click_ocr(match=['一键领取', '领取全部'], settle_time=0.5, box='bottom_right', after_sleep=1,
-                                   time_out=5):
-                self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=1, raise_if_not_found=False)
-
-        else:
-            self.wait_click_ocr(match=['委托'], box='right', after_sleep=0.5, raise_if_not_found=True)
-            self.sleep(1)
-            self.click(0.184, 0.519)
-            self.sleep(1)
-            self.click(0.042, 0.541)
-            self.sleep(1)
-            self.click(0.184, 0.539)
-            self.sleep(1)
-            self.click(0.042, 0.541)
-            self.sleep(1)
-            self.click(0.184, 0.598)
-            self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=1, raise_if_not_found=False)
+            self.wait_click_ocr(match=['确认'], after_sleep=0.5, raise_if_not_found=True)
+        self.sleep(1)
+        self.click(0.042, 0.541)
+        self.sleep(1)
+        self.click(0.184, 0.539)
+        self.sleep(1)
+        self.click(0.042, 0.541)
+        self.sleep(1)
+        self.click(0.184, 0.6)
+        self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=1, raise_if_not_found=False)
         self.back()
         self.ensure_main()
 
@@ -166,11 +184,14 @@ class DailyTask(BaseGfTask):
             self.log_info('found free item to buy')
             self.wait_click_ocr(match=['确认', '购买'], box='bottom', after_sleep=1.5, raise_if_not_found=True)
             self.wait_pop_up(time_out=5, count=1)
-        self.wait_click_ocr(match=['限时礼包'], box='top', after_sleep=0.5, raise_if_not_found=True)
+            self.back()
+            self.sleep(1)
+        self.wait_click_ocr(match=['限时礼包'], box='top', after_sleep=0.5, raise_if_not_found=True, time_out=2)
         if self.wait_click_ocr(match=['免费'], after_sleep=0.5, raise_if_not_found=False, time_out=1):
             self.log_info('found free item to buy')
             if self.wait_click_ocr(match=['确认', '购买'], box='bottom', after_sleep=1.5, raise_if_not_found=True):
                 self.back()
+                self.sleep(1)
         if self.config.get('购买调度商店'):
             self.buy_diaodu()
         self.ensure_main()
@@ -178,17 +199,12 @@ class DailyTask(BaseGfTask):
     def buy_diaodu(self):
         self.info_set('current_task', '调度商店')
         self.wait_click_ocr(match=['易物所'], box='left', after_sleep=0.5, raise_if_not_found=True)
+        self.click(0.055, 0.946)
+        self.sleep(1)
         self.wait_click_ocr(match=['调度商店'], after_sleep=1, raise_if_not_found=True)
-        while True:
-            buy = self.ocr(match=re.compile(r"周限购[1-9]\d*"))
-            if not buy:
-                return
-            self.click(buy[0], after_sleep=0.5)
-            max = self.ocr(match="最大", box="bottom_right")
-            if max:
-                self.click(max[0], after_sleep=0.5)
-            self.wait_click_ocr(match="购买", box="bottom_right", time_out=1, raise_if_not_found=True)
-            self.wait_pop_up(time_out=5, count=1)
+        self.wait_click_ocr(match="一键购买", box="bottom_right", time_out=1, raise_if_not_found=False)
+        self.wait_click_ocr(match='购买',  after_sleep=1, raise_if_not_found=False)
+        self.wait_pop_up(time_out=5, count=1)
 
     def arena(self):
         self.info_set('current_task', 'arena')
@@ -413,12 +429,12 @@ class DailyTask(BaseGfTask):
             if ding_xiang:
                 target = '定向精研'
             self.wait_click_ocr(match=target, settle_time=1, after_sleep=0.5, raise_if_not_found=True, log=True)
-            if ding_xiang:
-                self.wait_click_ocr(match=re.compile(self.config.get('体力本')),
-                                    box=self.box_of_screen(0.01, 0.21, 0.73, 0.31),
-                                    settle_time=0.5,
-                                    after_sleep=0.5, log=True,
-                                    raise_if_not_found=True)
+            # if ding_xiang:
+            #     self.wait_click_ocr(match=re.compile(self.config.get('体力本')),
+            #                         box=self.box_of_screen(0.01, 0.21, 0.73, 0.31),
+            #                         settle_time=0.5,
+            #                         after_sleep=0.5, log=True,
+            #                         raise_if_not_found=True)
             while remaining >= min_stamina:
                 if ding_xiang:
                     remaining = self.fast_combat(plus_x=0.69, plus_y=0.59)

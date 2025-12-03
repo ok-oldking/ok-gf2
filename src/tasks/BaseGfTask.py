@@ -155,7 +155,7 @@ class BaseGfTask(BaseTask):
             cost = default
         return cost
 
-    def fast_combat(self, battle_max=10, plus_x=0.64, plus_y=0.54, default_cost=10):
+    def fast_combat(self, battle_max=10, plus_x=0.64, plus_y=0.54, default_cost=10,activity=False):
         self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, raise_if_not_found=True)
         boxes = self.ocr(log=True, threshold=0.8)
         if next := self.find_boxes(boxes, '下一步', "bottom_right"):
@@ -166,10 +166,12 @@ class BaseGfTask(BaseTask):
                                   boundary=self.box_of_screen(0.84, 0, 0.99, 0.10))
         if current:
             current = int(current[0].name.split('/')[0])
+        elif activity:
+            current = 3
         else:
             current = 1
-
-        if len(find_boxes_by_name(boxes, ["确认", "取消", "上一步"])) != 2:
+        self.sleep(1)
+        if len(find_boxes_by_name(boxes, ["确认", "取消", "上一步"])) != 2 and len(find_boxes_by_name(boxes, ["确认", "取消", "上","一步"])) != 3:
             if self.debug:
                 self.screenshot('fast_no_zilv')
             self.log_info("自律没有弹窗, 可能是调度权限不足")
@@ -189,7 +191,7 @@ class BaseGfTask(BaseTask):
             self.info_incr('click_battle_plus')
             self.sleep(0.2)
         self.sleep(1)
-        remaining = current - self.find_cost()
+        remaining = current - can_fast_count*cost
         self.info_set('remaining_stamina', remaining)
         if can_fast_count > 0:
             self.click(find_boxes_by_name(boxes, "确认"))

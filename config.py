@@ -74,6 +74,7 @@ config = {
     'onetime_tasks': [  # tasks to execute
         ["src.tasks.DailyTask", "DailyTask"],
         ["src.tasks.ClearMapTask", "ClearMapTask"],
+        ["src.tasks.PioneersTask","PioneersTask"],
         ["ok", "DiagnosisTask"],
     ]
 }
