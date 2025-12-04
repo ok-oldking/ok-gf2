@@ -13,7 +13,7 @@ class DailyTask(BaseGfTask):
         self.name = "一键日常"
         self.description = "收菜"
         self.default_config.update({
-            '当前活动名称':'铸碑者的黎明',
+            '当前物资关卡名称':'铸碑者的黎明',
             '体力本': "军备解析",
             '活动情报补给': False,
             '活动自律': True,
@@ -106,14 +106,14 @@ class DailyTask(BaseGfTask):
             self.ensure_main()
 
     def activity(self):
-        activity_wuzi_name=self.config.get('当前活动名称')
+        activity_wuzi_name=self.config.get('当前物资关卡名称')
         self.info_set('current_task', 'activity')
         if self.wait_click_ocr(match=['限时开启'], box='top_right', after_sleep=0.5, raise_if_not_found=False,
                                time_out=4):
             if latest_activity := self.find_latest_activity():
                 self.click(latest_activity)
                 to_clicks = None
-                if to_clicks := self.wait_ocr(match=[f"{activity_wuzi_name}·上篇",f"{activity_wuzi_name}·下篇"], box='bottom',
+                if to_clicks := self.wait_ocr(match=[f"{activity_wuzi_name}·上篇",f"{activity_wuzi_name}·下篇"],
                                               raise_if_not_found=False, time_out=6, settle_time=2, log=True):
                     to_clicks2 = None
                     for click in to_clicks:
