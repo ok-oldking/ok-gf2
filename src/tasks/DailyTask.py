@@ -13,6 +13,7 @@ class DailyTask(BaseGfTask):
         self.name = "一键日常"
         self.description = "收菜"
         self.default_config.update({
+            '当前活动名称':'铸碑者的黎明',
             '体力本': "军备解析",
             '活动情报补给': False,
             '活动自律': True,
@@ -105,13 +106,14 @@ class DailyTask(BaseGfTask):
             self.ensure_main()
 
     def activity(self):
+        activity_wuzi_name=self.config.get('当前活动名称')
         self.info_set('current_task', 'activity')
         if self.wait_click_ocr(match=['限时开启'], box='top_right', after_sleep=0.5, raise_if_not_found=False,
                                time_out=4):
             if latest_activity := self.find_latest_activity():
                 self.click(latest_activity)
                 to_clicks = None
-                if to_clicks := self.wait_ocr(match=["^.{4}·(上篇|下篇)$"], box='right',
+                if to_clicks := self.wait_ocr(match=[f"{activity_wuzi_name}·上篇",f"{activity_wuzi_name}·下篇"], box='bottom',
                                               raise_if_not_found=False, time_out=6, settle_time=2, log=True):
                     to_clicks2 = None
                     for click in to_clicks:
@@ -127,6 +129,7 @@ class DailyTask(BaseGfTask):
                                                 raise_if_not_found=False, time_out=4, settle_time=2, log=True):
                     self.click(to_clicks, after_sleep=2)
                 if to_clicks:
+                    self.sleep(2)
                     if wuzi := self.ocr(match=re.compile('物资'), box='bottom_right'):
                         self.click(wuzi, after_sleep=0.5)
                     battles = self.wait_ocr(match=map_re, time_out=4)
@@ -313,8 +316,8 @@ class DailyTask(BaseGfTask):
         mapping = {'威玛西娜': '物理', '可露凯': '酸蚀', '春田': '浊刻', '莱妮': '物理', '妮基塔': '冷凝',
                    '玛绮朵': '浊刻', '琳德': '酸蚀', '洛贝拉': '物理', '托洛洛': '浊刻', '琼玖': '燃烧',
                    'jiangyu': '电导', 'klukai': '酸蚀', 'leva': '电导', 'nikketa': '浊刻', 'Makiatto': '冷凝',
-                   'qiongjiu': '燃烧', 'tololo': '浊刻'}
-        priority = ['威玛西娜', '可露凯', '春田', '莱妮', '妮基塔', '玛绮朵', '琳德', '洛贝拉', '托洛洛', '琼玖', 'jiangyu', 'klukai', 'leva', 'nikketa', 'Makiatto', 'qiongjiu', 'tololo']
+                   'qiongjiu': '燃烧', 'tololo': '浊刻','罗蕾莱':'燃烧'}
+        priority = ['威玛西娜', '可露凯','罗蕾莱', '春田', '莱妮', '妮基塔', '玛绮朵', '洛贝拉', '托洛洛', '琼玖', 'jiangyu', 'klukai', 'leva', 'nikketa', 'Makiatto', 'qiongjiu', 'tololo']
         a_break = False
         for m in [mapping[i] for i in priority]:
             if a_break:
