@@ -433,7 +433,7 @@ class DailyTask(BaseGfTask):
         remaining = 10000
         if self.config.get('刷钱本'):
             self.wait_click_ocr(match=['标准同调'], box='right', after_sleep=0.5, raise_if_not_found=True)
-            remaining = self.fast_combat(battle_max=4)
+            remaining = self.fast_combat(battle_max=4,set_cost=20)
             self.back(after_sleep=1)
         target = self.config.get('体力本')
         min_stamina = 10 if self.stamina_options.index(target) < 2 else 20
@@ -450,9 +450,9 @@ class DailyTask(BaseGfTask):
             #                         raise_if_not_found=True)
             while remaining >= min_stamina:
                 if ding_xiang:
-                    remaining = self.fast_combat(plus_x=0.69, plus_y=0.59)
+                    remaining = self.fast_combat(plus_x=0.69, plus_y=0.59,set_cost=30)
                 else:
-                    remaining = self.fast_combat()
+                    remaining = self.fast_combat(set_cost=30)
         self.ensure_main()
 
 
