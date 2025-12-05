@@ -71,10 +71,10 @@ class BaseGfTask(BaseTask):
                     self.click_relative(0.88, 0.04, after_sleep=1)
 
         while results := self.skip_dialogs(
-                end_match=['任务完成', '任务失败', '战斗失败', '对战胜利', '对战失败', '确认'], time_out=900,
+                end_match=['任务完成', '任务失败', '战斗失败', '对战胜利', '对战失败', '确认','确认结算'], time_out=900,
                 has_dialog=has_dialog):
             for result in results:
-                if result.name == '确认':
+                if result.name in ("确认","确认结算"):
                     self.click_box(result, after_sleep=2)
                     break
             self.sleep(2)
@@ -93,6 +93,7 @@ class BaseGfTask(BaseTask):
             else:
                 end_match = [end_match] + pop_ups
             end_match.append('确认')
+            end_match.append('确认结算')
             while True:
                 match = self.wait_ocr(match=end_match, box=end_box, raise_if_not_found=True, time_out=30)
                 if match[0].name in pop_ups:
@@ -100,7 +101,7 @@ class BaseGfTask(BaseTask):
                     continue
                 if match:
                     self.log_info(f'battle end matched: {match}')
-                    if match[0].name == "确认":
+                    if match[0].name in ("确认","确认结算"):
                         self.click_box(match, after_sleep=8)
                     break
         self.sleep(2)
@@ -155,7 +156,7 @@ class BaseGfTask(BaseTask):
             cost = default
         return cost
 
-    def fast_combat(self, battle_max=10, plus_x=0.64, plus_y=0.54, default_cost=10,activity=False):
+    def fast_combat(self, battle_max=10, plus_x=0.64, plus_y=0.54, default_cost=10,set_cost=None,activity=False):
         self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, raise_if_not_found=True)
         boxes = self.ocr(log=True, threshold=0.8)
         if next := self.find_boxes(boxes, '下一步', "bottom_right"):
@@ -176,8 +177,10 @@ class BaseGfTask(BaseTask):
                 self.screenshot('fast_no_zilv')
             self.log_info("自律没有弹窗, 可能是调度权限不足")
             return current
-
-        cost = self.find_cost(boxes, default=default_cost)
+        if set_cost:
+            cost=set_cost
+        else:
+            cost = self.find_cost(boxes, default=default_cost)
 
         self.info_set('current_stamina', current)
         self.info_set('battle_cost', cost)
