@@ -323,6 +323,7 @@ class DailyTask(BaseGfTask):
             if a_break:
                 break
             self.wait_click_ocr(match=m, time_out=2)
+            self.sleep(2)
             chars = self.ocr(0.18, 0.27, 0.82, 0.79, match=re.compile(r'^\D*$'))
             my_chars = []
             sorted_chars = sort_characters_by_priority(chars, priority)
