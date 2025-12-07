@@ -436,6 +436,7 @@ class DailyTask(BaseGfTask):
             remaining = self.fast_combat(battle_max=4,set_cost=20)
             self.back(after_sleep=1)
         target = self.config.get('体力本')
+        cost_dict={"深度搜索":10,"军备解析":10,"决策构象":20,"定向精研":30}
         min_stamina = 10 if self.stamina_options.index(target) < 2 else 20
         if remaining >= min_stamina:
             ding_xiang = self.stamina_options.index(target) >= 3
@@ -450,9 +451,9 @@ class DailyTask(BaseGfTask):
             #                         raise_if_not_found=True)
             while remaining >= min_stamina:
                 if ding_xiang:
-                    remaining = self.fast_combat(plus_x=0.69, plus_y=0.59,set_cost=30)
+                    remaining = self.fast_combat(plus_x=0.69, plus_y=0.59,set_cost=cost_dict[target])
                 else:
-                    remaining = self.fast_combat(set_cost=30)
+                    remaining = self.fast_combat(set_cost=cost_dict.get(target,None))
         self.ensure_main()
 
 

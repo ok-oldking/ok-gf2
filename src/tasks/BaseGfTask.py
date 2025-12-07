@@ -156,8 +156,13 @@ class BaseGfTask(BaseTask):
             cost = default
         return cost
 
-    def fast_combat(self, battle_max=10, plus_x=0.64, plus_y=0.54, default_cost=10,set_cost=None,activity=False):
+    def fast_combat(self, battle_max=10, plus_x=0.616, plus_y=0.52, default_cost=10,set_cost=None,click_all=False,activity=False):
         self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, raise_if_not_found=True)
+        if activity:
+            click_all = True
+        if click_all:
+            plus_x=0.65
+            plus_y=0.52
         boxes = self.ocr(log=True, threshold=0.8)
         if next := self.find_boxes(boxes, '下一步', "bottom_right"):
             self.click(next, after_sleep=1)
@@ -167,8 +172,6 @@ class BaseGfTask(BaseTask):
                                   boundary=self.box_of_screen(0.84, 0, 0.99, 0.10))
         if current:
             current = int(current[0].name.split('/')[0])
-        elif activity:
-            current = 3
         else:
             current = 1
         self.sleep(1)
