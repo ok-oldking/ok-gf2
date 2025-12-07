@@ -13,7 +13,8 @@ class DailyTask(BaseGfTask):
         self.name = "一键日常"
         self.description = "收菜"
         self.default_config.update({
-            '当前物资关卡名称':'铸碑者的黎明',
+            '当前物资关卡名称(用符号-分隔多个活动,无上下篇的活动不要加)': '铸碑者的黎明',
+            '是否是国际服(若勾选时无法正常执行公共区/调度室任务时请取消勾选)': False,
             '体力本': "军备解析",
             '活动情报补给': False,
             '活动自律': True,
@@ -106,36 +107,48 @@ class DailyTask(BaseGfTask):
             self.ensure_main()
 
     def activity(self):
-        activity_wuzi_name=self.config.get('当前物资关卡名称')
+        activity_wuzi_names = str(self.config.get('当前物资关卡名称(用符号-分隔多个活动,无上下篇的活动不要加)')).split(
+            "-")
         self.info_set('current_task', 'activity')
-        if self.wait_click_ocr(match=['限时开启'], box='top_right', after_sleep=0.5, raise_if_not_found=False,
+        if self.wait_click_ocr(match=['限时开启'], box='top_right', after_sleep=2, raise_if_not_found=False,
                                time_out=4):
-            if latest_activity := self.find_latest_activity():
-                self.click(latest_activity)
-                to_clicks = None
-                if to_clicks := self.wait_ocr(match=[f"{activity_wuzi_name}·上篇",f"{activity_wuzi_name}·下篇"],
-                                              raise_if_not_found=False, time_out=6, settle_time=2, log=True):
-                    to_clicks2 = None
-                    for click in to_clicks:
-                        if "下篇" in click.name:
-                            self.click(click)
-                            break
-                        else:
-                            to_clicks2 = click
-                    if to_clicks2:
-                        self.sleep(1)
-                        self.click(to_clicks2)
-                elif to_clicks := self.wait_ocr(match=['活动战役', re.compile('物资')], box='bottom',
-                                                raise_if_not_found=False, time_out=4, settle_time=2, log=True):
-                    self.click(to_clicks, after_sleep=2)
-                if to_clicks:
-                    self.sleep(2)
-                    if wuzi := self.ocr(match=re.compile('物资'), box='bottom_right'):
-                        self.click(wuzi, after_sleep=0.5)
-                    battles = self.wait_ocr(match=map_re, time_out=4)
-                    if battles:
-                        self.click(battles[-1])
-                        self.fast_combat(6, default_cost=1, activity=True)
+            if activities := self.wait_ocr(match=['开启中'], box='bottom_left', time_out=4):
+                activity_count = 0
+                for activity in activities:
+                    self.ensure_main()
+                    self.wait_click_ocr(match=['限时开启'], box='top_right', after_sleep=2, raise_if_not_found=False,
+                                        time_out=4)
+                    self.click(activity)
+                    to_clicks = None
+                    if activity_count >= len(activity_wuzi_names):
+                        activity_count -= 1
+                    if to_clicks := self.wait_ocr(match=[f"{activity_wuzi_names[activity_count]}·上篇",
+                                                         f"{activity_wuzi_names[activity_count]}·下篇"],
+                                                  raise_if_not_found=False, time_out=6, settle_time=2, log=True):
+                        activity_count += 1
+                        to_clicks2 = None
+                        for click in to_clicks:
+                            if "下篇" in click.name:
+                                self.click(click)
+                                break
+                            else:
+                                to_clicks2 = click
+                        if to_clicks2:
+                            self.sleep(1)
+                            self.click(to_clicks2)
+                    elif to_clicks := self.wait_ocr(match=['活动战役', re.compile('物资')], box='bottom',
+                                                    raise_if_not_found=False, time_out=4, settle_time=2, log=True):
+                        self.click(to_clicks, after_sleep=2)
+                    if to_clicks:
+                        self.sleep(2)
+                        if wuzi := self.ocr(match=re.compile('物资'), box='bottom_right'):
+                            self.click(wuzi, after_sleep=0.5)
+                        battles = self.wait_ocr(match=map_re, time_out=4)
+                        if battles:
+                            self.click(battles[-1])
+                            self.fast_combat(6, default_cost=1, activity=True)
+            else:
+                self.log_info("找不到开启的活动")
         self.ensure_main()
 
     def find_activities(self):
@@ -160,20 +173,25 @@ class DailyTask(BaseGfTask):
 
     def gongongqu(self):
         self.info_set('current_task', 'public area')
+        is_global_ver = self.config.get('是否是国际服(若勾选时无法正常执行公共区/调度室任务时请取消勾选)')
+        coords_enter_list = [
+            [0.524, 0.583, 0.643],  # True
+            [0.478, 0.539, 0.6]  # False
+        ]
+        index = 0 if is_global_ver else 1
         self.wait_click_ocr(match=['委托'], box='right', after_sleep=0.5, raise_if_not_found=True)
-        self.sleep(1)
-        self.click(0.184, 0.478)
+        self.sleep(2)
+        self.click(0.184, coords_enter_list[index][0])
         if self.wait_ocr(match=['最小'], time_out=4, settle_time=2, log=True):
-            self.sleep(1)
             self.wait_click_ocr(match=['确认'], after_sleep=0.5, raise_if_not_found=True)
-        self.sleep(1)
+        self.sleep(2)
         self.click(0.042, 0.541)
-        self.sleep(1)
-        self.click(0.184, 0.539)
-        self.sleep(1)
+        self.sleep(2)
+        self.click(0.184, coords_enter_list[index][1])
+        self.sleep(2)
         self.click(0.042, 0.541)
-        self.sleep(1)
-        self.click(0.184, 0.6)
+        self.sleep(2)
+        self.click(0.184, coords_enter_list[index][2])
         self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=1, raise_if_not_found=False)
         self.back()
         self.ensure_main()
@@ -316,8 +334,9 @@ class DailyTask(BaseGfTask):
         mapping = {'威玛西娜': '物理', '可露凯': '酸蚀', '春田': '浊刻', '莱妮': '物理', '妮基塔': '冷凝',
                    '玛绮朵': '浊刻', '琳德': '酸蚀', '洛贝拉': '物理', '托洛洛': '浊刻', '琼玖': '燃烧',
                    'jiangyu': '电导', 'klukai': '酸蚀', 'leva': '电导', 'nikketa': '浊刻', 'Makiatto': '冷凝',
-                   'qiongjiu': '燃烧', 'tololo': '浊刻','罗蕾莱':'燃烧'}
-        priority = ['威玛西娜', '可露凯','罗蕾莱', '春田', '莱妮', '妮基塔', '玛绮朵', '洛贝拉', '托洛洛', '琼玖', 'jiangyu', 'klukai', 'leva', 'nikketa', 'Makiatto', 'qiongjiu', 'tololo']
+                   'qiongjiu': '燃烧', 'tololo': '浊刻', '罗蕾莱': '燃烧'}
+        priority = ['威玛西娜', '可露凯', '罗蕾莱', '春田', '莱妮', '妮基塔', '玛绮朵', '洛贝拉', '托洛洛', '琼玖',
+                    'jiangyu', 'klukai', 'leva', 'nikketa', 'Makiatto', 'qiongjiu', 'tololo']
         a_break = False
         for m in [mapping[i] for i in priority]:
             if a_break:
@@ -433,10 +452,10 @@ class DailyTask(BaseGfTask):
         remaining = 10000
         if self.config.get('刷钱本'):
             self.wait_click_ocr(match=['标准同调'], box='right', after_sleep=0.5, raise_if_not_found=True)
-            remaining = self.fast_combat(battle_max=4,set_cost=20)
+            remaining = self.fast_combat(battle_max=4, set_cost=20)
             self.back(after_sleep=1)
         target = self.config.get('体力本')
-        cost_dict={"深度搜索":10,"军备解析":10,"决策构象":20,"定向精研":30}
+        cost_dict = {"深度搜索": 10, "军备解析": 10, "决策构象": 20, "定向精研": 30}
         min_stamina = 10 if self.stamina_options.index(target) < 2 else 20
         if remaining >= min_stamina:
             ding_xiang = self.stamina_options.index(target) >= 3
@@ -451,9 +470,9 @@ class DailyTask(BaseGfTask):
             #                         raise_if_not_found=True)
             while remaining >= min_stamina:
                 if ding_xiang:
-                    remaining = self.fast_combat(plus_x=0.69, plus_y=0.59,set_cost=cost_dict[target])
+                    remaining = self.fast_combat(plus_x=0.69, plus_y=0.59, set_cost=cost_dict[target])
                 else:
-                    remaining = self.fast_combat(set_cost=cost_dict.get(target,None))
+                    remaining = self.fast_combat(set_cost=cost_dict.get(target, None))
         self.ensure_main()
 
 
