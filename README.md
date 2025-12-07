@@ -8,8 +8,7 @@
 6. 部分参数说明：
 
 下图左侧为小活动,物资关卡显示则为**物资模式**,显示为**物资模式**则不用管,右侧为大活动,物资关卡显示为**铸碑者的黎明·上篇**,则需要填图中物资关卡名为**铸碑者的黎明**(不正确填写可能会影响活动代理逻辑)
-![Screenshot_2025-12-04-20-00-21-208_com limelight](https://github.com/user-attachments/assets/057536aa-cc51-4242-982c-4bf378d6fc90)
-
+<img width="5001" height="2066" alt="1765122815802" src="https://github.com/user-attachments/assets/ed261840-449a-46d4-8a07-f58382f3a779" />
 
 ![image](https://github.com/user-attachments/assets/6bd2ac34-fd40-4c74-9e8e-a0343818876d)
 
