@@ -68,13 +68,14 @@ class DailyTask(BaseGfTask):
                 self.sleep(2)
                 if i == 0:
                     self.go_drink()
-                    self.send_key("F")
                     if self.wait_click_ocr(match='制作', box='bottom_right', after_sleep=0.5, time_out=10):
                         if self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2):
-                            self.skip_dialogs(end_match=['饮品加成'])
+                            results=self.skip_dialogs(end_match=['饮品加成','确认'])
+                            for result in results:
+                                if result.name=='确认':
+                                    self.click(result,after_sleep=2)
                 else:
                     self.go_eat()
-                    self.send_key("F")
                     if self.wait_click_ocr(match='下一步', box='bottom_right', after_sleep=0.5, time_out=10):
                         if self.wait_click_ocr(match='确认邀请', box='bottom_right', after_sleep=0.5, time_out=2):
                             self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2)
@@ -82,7 +83,7 @@ class DailyTask(BaseGfTask):
                             for result in results:
                                 if result.name=='确认':
                                     self.click(result,after_sleep=2)
-
+                self.wait_pop_up(count=1)
                 self.out_free_layer()
                 self.ensure_main()
 
