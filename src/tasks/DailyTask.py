@@ -520,6 +520,7 @@ class DailyTask(BaseGfTask):
         self.send_key_down('s')
         self.sleep(1.0)
         self.send_key_up('s')
+        self.send_key_down('d')
         self.sleep(1)
         self.send_key('f')
 
