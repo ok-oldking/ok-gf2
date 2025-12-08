@@ -19,12 +19,12 @@ class DailyTask(BaseGfTask):
             '活动情报补给': False,
             '活动自律': True,
             '公共区/调度室': True,
+            '活动层': True,
             '购买免费礼包': True,
-            '购买调度商店': True,
+            '商店心愿单购买': True,
             '自动刷体力': True,
             '刷钱本': False,
             '竞技场': True,
-            '兵棋推演': False,
             '班组': True,
             '尘烟': True,
             '领任务': True,
@@ -41,29 +41,46 @@ class DailyTask(BaseGfTask):
 
     def run(self):
         self.ensure_main(recheck_time=2, time_out=90)
-        if self.config.get('活动情报补给'):
-            self.activity_stamina()
-        if self.config.get('活动自律'):
-            self.activity()
-        if self.config.get('公共区/调度室'):
-            self.gongongqu()
-        if self.config.get('购买免费礼包'):
-            self.shopping()
-        if self.config.get('自动刷体力'):
-            self.battle()
-        if self.config.get('竞技场'):
-            self.arena()
-        if self.config.get('兵棋推演'):
-            self.bingqi()
-        if self.config.get('班组'):
-            self.guild()
-        if self.config.get('领任务'):
-            self.claim_quest()
-        if self.config.get('大月卡'):
-            self.xunlu()
-        if self.config.get('邮件'):
-            self.mail()
-        self.log_info('少前2日常完成!', notify=True)
+        tasks = [
+            ('活动情报补给', self.activity_stamina),
+            ('活动自律', self.activity),
+            ('公共区/调度室', self.gongongqu),
+            ('活动层', self.free_time_layer),
+            ('购买免费礼包', self.shopping),
+            ('自动刷体力', self.battle),
+            ('竞技场', self.arena),
+            ('班组', self.guild),
+            ('领任务', self.claim_quest),
+            ('大月卡', self.xunlu),
+            ('邮件', self.mail),
+        ]
+        for key, func in tasks:
+            if self.config.get(key):
+                if func:
+                    func()
+        self.log_info("日常完成!", notify=True)
+
+    def free_time_layer(self):
+        self.info_set('current_task', 'free_time_layer')
+        for i in range(2):
+            self.wait_click_ocr(match='活动层', box='right', after_sleep=0.5, raise_if_not_found=True)
+            if self.is_free_layer():
+                self.sleep(2)
+                if i == 0:
+                    self.go_drink()
+                    if self.wait_click_ocr(match='茶歇一刻', after_sleep=0.5, time_out=2):
+                        if self.wait_click_ocr(match='制作', box='bottom_right', after_sleep=0.5, time_out=10):
+                            if self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2):
+                                self.skip_dialogs(end_match=['饮品加成'])
+                else:
+                    self.go_eat()
+                    if self.wait_click_ocr(match='茶歇一刻', after_sleep=0.5, time_out=2):
+                        if self.wait_click_ocr(match='下一步', box='bottom_right', after_sleep=0.5, time_out=10):
+                            if self.wait_click_ocr(match='确认邀请', box='bottom_right', after_sleep=0.5, time_out=2):
+                                self.skip_dialogs(end_match=['前往战役'])
+
+                self.out_free_layer()
+                self.ensure_main()
 
     def activity_stamina(self):
         self.info_set('current_task', 'activity_stamina')
@@ -82,9 +99,12 @@ class DailyTask(BaseGfTask):
                             raise_if_not_found=False, after_sleep=2)
         results = self.ocr(match=['领取全部', '无可领取报酬', '已全部领取'], box='left')
         # if results and results[0].name == '一键领取':
-        if results[0].name == '领取全部':
-            self.click(results[0])
-            self.wait_pop_up(time_out=4)
+        if len(results) != 0:
+            if results[0].name == '领取全部':
+                self.click(results[0])
+                self.wait_pop_up(time_out=4)
+            else:
+                self.log_error("委托未领取")
         self.ensure_main()
 
     def mail(self):
@@ -213,19 +233,20 @@ class DailyTask(BaseGfTask):
             if self.wait_click_ocr(match=['确认', '购买'], box='bottom', after_sleep=1.5, raise_if_not_found=True):
                 self.back()
                 self.sleep(1)
-        if self.config.get('购买调度商店'):
-            self.buy_diaodu()
+        if self.config.get('商店心愿单购买'):
+            self.buy_others()
         self.ensure_main()
 
-    def buy_diaodu(self):
+    def buy_others(self):
         self.info_set('current_task', '调度商店')
-        self.wait_click_ocr(match=['易物所'], box='left', after_sleep=0.5, raise_if_not_found=True)
         self.click(0.055, 0.946)
         self.sleep(1)
-        self.wait_click_ocr(match=['调度商店'], after_sleep=1, raise_if_not_found=True)
-        self.wait_click_ocr(match="一键购买", box="bottom_right", time_out=1, raise_if_not_found=False)
-        self.wait_click_ocr(match='购买', after_sleep=1, raise_if_not_found=False)
-        self.wait_pop_up(time_out=5, count=1)
+        others_list = ['家具商店', '班组商店', '调度商店', '讯段交易', '心智统合', '人形堆栈']
+        for other in others_list:
+            if self.wait_click_ocr(match=other, after_sleep=1, raise_if_not_found=False):
+                if self.wait_click_ocr(match="一键购买", box="bottom_right", time_out=1, raise_if_not_found=False):
+                    if self.wait_click_ocr(match='购买', after_sleep=1, raise_if_not_found=False):
+                        self.wait_pop_up(time_out=5, count=1)
 
     def arena(self):
         self.info_set('current_task', 'arena')
@@ -474,6 +495,46 @@ class DailyTask(BaseGfTask):
                 else:
                     remaining = self.fast_combat(set_cost=cost_dict.get(target, None))
         self.ensure_main()
+
+    def go_drink(self):
+        self.send_key_down('a')
+        self.sleep(0.013)
+        self.send_key_down('w')
+        self.sleep((1644 - 431) / 1000)  # 等到 A 的释放时刻
+        self.send_key_up('a')
+        self.sleep((1776 - 1644) / 1000)
+        self.send_key_up('w')
+        self.sleep((2496 - 1776) / 1000)
+        self.send_key_down('w')
+        self.sleep((2520 - 2496) / 1000)
+        self.send_key_down('d')
+        self.sleep((3251 - 2520) / 1000)
+        self.send_key_up('w')
+        self.sleep((3264 - 3251) / 1000)
+        self.send_key_up('d')
+
+    def go_eat(self):
+        self.send_key_down('a')
+        self.sleep(0.008)
+        self.send_key_down('s')
+        self.sleep(0.753)
+        self.send_key_up('a')
+        self.sleep(0.087)
+        self.send_key_up('s')
+        self.send_key_down('d')
+        self.sleep(0.023)
+        self.send_key_down('s')
+        self.sleep(0.875)
+        self.send_key_up('d')
+        self.sleep(0)
+        self.send_key_up('s')
+        self.send_key_down('w')
+        self.sleep(0.012)
+        self.send_key_down('d')
+        self.sleep(0.252)
+        self.send_key_up('w')
+        self.sleep(0)
+        self.send_key_up('d')
 
 
 def sort_characters_by_priority(chars, priority):

@@ -71,10 +71,11 @@ class BaseGfTask(BaseTask):
                     self.click_relative(0.88, 0.04, after_sleep=1)
 
         while results := self.skip_dialogs(
-                end_match=['任务完成', '任务失败', '战斗失败', '对战胜利', '对战失败', '确认','确认结算'], time_out=900,
+                end_match=['任务完成', '任务失败', '战斗失败', '对战胜利', '对战失败', '确认', '确认结算'],
+                time_out=900,
                 has_dialog=has_dialog):
             for result in results:
-                if result.name in ("确认","确认结算"):
+                if result.name in ("确认", "确认结算"):
                     self.click_box(result, after_sleep=2)
                     break
             self.sleep(2)
@@ -101,7 +102,7 @@ class BaseGfTask(BaseTask):
                     continue
                 if match:
                     self.log_info(f'battle end matched: {match}')
-                    if match[0].name in ("确认","确认结算"):
+                    if match[0].name in ("确认", "确认结算"):
                         self.click_box(match, after_sleep=8)
                     break
         self.sleep(2)
@@ -156,13 +157,28 @@ class BaseGfTask(BaseTask):
             cost = default
         return cost
 
-    def fast_combat(self, battle_max=10, plus_x=0.616, plus_y=0.52, default_cost=10,set_cost=None,click_all=False,activity=False):
+    def out_free_layer(self):
+        self.info_set('current_task', 'out_free_layer')
+        while not self.wait_click_ocr(match=['确认'],time_out=2):
+            self.back()
+            self.sleep(2)
+
+    def is_free_layer(self):
+        result = self.wait_ocr(match=['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7'], settle_time=5,
+                               time_out=10, box='top')
+        if len(result) >= 6:
+            return True
+        else:
+            return False
+
+    def fast_combat(self, battle_max=10, plus_x=0.616, plus_y=0.52, default_cost=10, set_cost=None, click_all=False,
+                    activity=False):
         self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, raise_if_not_found=True)
         if activity:
             click_all = True
         if click_all:
-            plus_x=0.65
-            plus_y=0.52
+            plus_x = 0.65
+            plus_y = 0.52
         boxes = self.ocr(log=True, threshold=0.8)
         if next := self.find_boxes(boxes, '下一步', "bottom_right"):
             self.click(next, after_sleep=1)
@@ -175,13 +191,14 @@ class BaseGfTask(BaseTask):
         else:
             current = 1
         self.sleep(1)
-        if len(find_boxes_by_name(boxes, ["确认", "取消", "上一步"])) != 2 and len(find_boxes_by_name(boxes, ["确认", "取消", "上","一步"])) != 3:
+        if len(find_boxes_by_name(boxes, ["确认", "取消", "上一步"])) != 2 and len(
+                find_boxes_by_name(boxes, ["确认", "取消", "上", "一步"])) != 3:
             if self.debug:
                 self.screenshot('fast_no_zilv')
             self.log_info("自律没有弹窗, 可能是调度权限不足")
             return current
         if set_cost:
-            cost=set_cost
+            cost = set_cost
         else:
             cost = self.find_cost(boxes, default=default_cost)
 
@@ -197,7 +214,7 @@ class BaseGfTask(BaseTask):
             self.info_incr('click_battle_plus')
             self.sleep(0.2)
         self.sleep(1)
-        remaining = current - can_fast_count*cost
+        remaining = current - can_fast_count * cost
         self.info_set('remaining_stamina', remaining)
         if can_fast_count > 0:
             self.click(find_boxes_by_name(boxes, "确认"))
