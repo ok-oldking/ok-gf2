@@ -1,4 +1,5 @@
 import re
+import threading
 import time
 
 from ok import BaseTask, find_boxes_by_name
@@ -117,7 +118,7 @@ class BaseGfTask(BaseTask):
             else:
                 return True
         # if not self.do_handle_alert()[0]:
-        if box:=self.ocr(match=re.compile('^是否离开活动层'), log=True):
+        if self.ocr(match=re.compile('^是否离开活动层'), log=True):
             self.wait_click_ocr(match='确认',after_sleep=2)
         if box := self.ocr(box="bottom", match=["点击开始", "点击空白处关闭", "取消"],
                            log=True):
@@ -141,6 +142,27 @@ class BaseGfTask(BaseTask):
         self.send_key('esc', down_time=0.04, after_sleep=after_sleep)
         if self.debug:
             self.screenshot('back', frame=frame)
+    def free_layer_click(self, x=0, y=0, move_back=False, name=None, interval=-1, move=True,
+              down_time=0.01, after_sleep=0, key="left"):
+        frame = self.frame
+        self.send_key_down('alt')
+        self.click(x, y, move_back=move_back, name=name, move=move,down_time=down_time,after_sleep=after_sleep,interval=interval,key=key)
+        self.send_key_up('alt')
+        if self.debug:
+            self.screenshot('free_layer_click', frame=frame)
+
+    def click_with_key(self, hold_key, result,delay1=1,delay2=0.5):
+        def start_task1():
+            self.send_key(key=hold_key,down_time=delay1)
+        def start_task2():
+            time.sleep(delay2)  # 控制任务2启动延迟
+            self.click(result)
+        t1 = threading.Thread(target=start_task1)
+        t2 = threading.Thread(target=start_task2)
+        t1.start()
+        t2.start()
+        t1.join()
+        t2.join()
 
     def find_top_right_count(self):
         result = self.ocr(0.89, 0.01, 0.99, 0.1, match=re.compile(r"^\d+/\d+$"), box='top_right')

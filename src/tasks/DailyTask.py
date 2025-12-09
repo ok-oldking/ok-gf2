@@ -20,6 +20,8 @@ class DailyTask(BaseGfTask):
             '活动自律': True,
             '公共区/调度室': True,
             '活动层': True,
+            '喝水(AWD按住秒数,用-分隔)': '1.087-1.4-0.5',
+            '吃饭(S按住秒数)': '1.0',
             '购买免费礼包': True,
             '商店心愿单购买': True,
             '自动刷体力': True,
@@ -60,6 +62,22 @@ class DailyTask(BaseGfTask):
                     func()
         self.log_info("日常完成!", notify=True)
 
+    def go_drink(self):
+        down_times=str(self.config.get('喝水(AWD按住秒数,用-分隔)')).split('-')
+        self.send_key('a',down_time=float(down_times[0]))
+        self.sleep(0.5)
+        self.send_key('w',down_time=float(down_times[1]))
+        self.sleep(0.5)
+        self.send_key('d',down_time=float(down_times[2]))
+        self.sleep(1)
+        # self.send_key('f')
+
+    def go_eat(self):
+        down_time=str(self.config.get('吃饭(S按住秒数)'))
+        self.send_key('s',down_time= float(down_time))
+        self.send_key('d')
+        self.sleep(1)
+        # self.send_key('f')
     def free_time_layer(self):
         self.info_set('current_task', 'free_time_layer')
         for i in range(2):
@@ -68,24 +86,27 @@ class DailyTask(BaseGfTask):
                 self.sleep(2)
                 if i == 0:
                     self.go_drink()
-                    self.wait_click_ocr(match=re.compile('茶歇一刻'), after_sleep=10)
+                    if result:=self.wait_ocr(match=re.compile('茶歇一刻')):
+                        self.click_with_key('alt', result)
                     if self.wait_click_ocr(match='制作', box='bottom_right', after_sleep=0.5, time_out=10):
                         if self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2):
-                            results=self.skip_dialogs(end_match=['饮品加成','确认'])
+                            results = self.skip_dialogs(end_match=['饮品加成', '确认'])
                             for result in results:
-                                if result.name=='确认':
-                                    self.click(result,after_sleep=2)
+                                if result.name == '确认':
+                                    self.click(result, after_sleep=2)
                 else:
                     self.go_eat()
-                    self.wait_click_ocr(match=re.compile('美味烹调'), after_sleep=10)
+                    if result:=self.wait_ocr(match=re.compile('美味烹调')):
+                        self.click_with_key('alt', result)
                     if self.wait_click_ocr(match='下一步', box='bottom_right', after_sleep=0.5, time_out=10):
                         if self.wait_click_ocr(match='确认邀请', box='bottom_right', after_sleep=0.5, time_out=2):
                             self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2)
                             results = self.skip_dialogs(end_match=['前往战役', '确认'])
                             for result in results:
-                                if result.name=='确认':
-                                    self.click(result,after_sleep=2)
+                                if result.name == '确认':
+                                    self.click(result, after_sleep=2)
                 self.wait_pop_up(count=1)
+                self.back()
                 self.ensure_main(time_out=50)
 
     def activity_stamina(self):
@@ -274,6 +295,8 @@ class DailyTask(BaseGfTask):
         #     self.click_relative(0.34 if self.is_adb() else 0.26, 0.89, after_sleep=0.5)
         #     if not self.wait_ocr(match=['演习补给'], box='top', time_out=4):
         #         self.wait_pop_up(time_out=4)
+        if self.wait_click_ocr(match=['周期奖励'], box='left', after_sleep=1, raise_if_not_found=True):
+            self.wait_click_ocr(match=['一键领取'], after_sleep=1, raise_if_not_found=False)
         self.ensure_main()
 
     def bingqi(self):
@@ -423,30 +446,6 @@ class DailyTask(BaseGfTask):
             else:
                 return click
 
-    def go_drink(self):
-        self.send_key_down('a')
-        self.sleep(1.087)
-        self.send_key_up('a')
-        self.sleep(0.019)
-        self.send_key_down('w')
-        self.sleep(1.4)
-        self.send_key_up('w')
-        self.sleep(0.396)
-        self.send_key_down('d')
-        self.sleep(0.5)
-        self.send_key_up('d')
-        self.sleep(1)
-        self.send_key('f')
-
-    def go_eat(self):
-        self.send_key_down('s')
-        self.sleep(1.0)
-        self.send_key_up('s')
-        self.send_key_down('d')
-        self.sleep(0.5)
-        self.send_key_up('d')
-        self.sleep(1)
-        self.send_key('f')
 
     def arena_remaining(self):
         return int(self.ocr(0.89, 0.01, 0.99, 0.1, match=stamina_re)[0].name.split('/')[0])
@@ -526,7 +525,6 @@ class DailyTask(BaseGfTask):
                 else:
                     remaining = self.fast_combat(set_cost=cost_dict.get(target, None))
         self.ensure_main()
-
 
 
 def sort_characters_by_priority(chars, priority):
