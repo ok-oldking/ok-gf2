@@ -15,6 +15,7 @@ class DailyTask(BaseGfTask):
         self.default_config.update({
             '当前物资关卡名称(用符号-分隔多个活动,无上下篇的活动不要加)': '铸碑者的黎明',
             '是否是国际服(若勾选时无法正常执行公共区/调度室任务时请取消勾选)': False,
+            '自主循环':False,
             '体力本': "军备解析",
             '活动情报补给': False,
             '活动自律': True,
@@ -94,6 +95,7 @@ class DailyTask(BaseGfTask):
                             for result in results:
                                 if result.name == '确认':
                                     self.click(result, after_sleep=2)
+                        self.wait_pop_up(count=1)
                 else:
                     self.go_eat()
                     if result:=self.wait_ocr(match=re.compile('美味烹调')):
@@ -105,9 +107,9 @@ class DailyTask(BaseGfTask):
                             for result in results:
                                 if result.name == '确认':
                                     self.click(result, after_sleep=2)
-                self.wait_pop_up(count=1)
-                self.back()
-                self.ensure_main(time_out=50)
+                            self.wait_pop_up(count=1)
+            self.back()
+            self.ensure_main(time_out=50)
 
     def activity_stamina(self):
         self.info_set('current_task', 'activity_stamina')
@@ -226,11 +228,11 @@ class DailyTask(BaseGfTask):
             [0.478, 0.539, 0.6]  # False
         ]
         index = 0 if is_global_ver else 1
-        self.wait_click_ocr(match=['委托'], box='right', after_sleep=0.5, raise_if_not_found=True)
-        self.sleep(2)
-        self.click(0.184, coords_enter_list[index][0])
-        if self.wait_ocr(match=['最小'], time_out=4, settle_time=2, log=True):
-            self.wait_click_ocr(match=['确认'], after_sleep=0.5, raise_if_not_found=True)
+        self.wait_click_ocr(match=['委托'], box='right', after_sleep=2.5, raise_if_not_found=True)
+        if not self.config.get('自主循环'):
+            self.click(0.184, coords_enter_list[index][0])
+            if self.wait_ocr(match=['最小'], time_out=4, settle_time=2, log=True):
+                self.wait_click_ocr(match=['确认'], after_sleep=0.5, raise_if_not_found=True)
         self.sleep(2)
         self.click(0.042, 0.541)
         self.sleep(2)
@@ -239,7 +241,12 @@ class DailyTask(BaseGfTask):
         self.click(0.042, 0.541)
         self.sleep(2)
         self.click(0.184, coords_enter_list[index][2])
-        self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=1, raise_if_not_found=False)
+        self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=2, raise_if_not_found=False)
+        if self.config.get('自主循环'):
+            if self.wait_click_ocr(match=['自主循环'], box='bottom_left',time_out=5, after_sleep=2):
+                if self.wait_click_ocr(match=['确认'], after_sleep=2):
+                    if self.wait_click_ocr(match=['循环结束'],time_out=5, box='top', after_sleep=2):
+                        self.wait_click_ocr(match=['确认'], after_sleep=2)
         self.back()
         self.ensure_main()
 
@@ -276,6 +283,9 @@ class DailyTask(BaseGfTask):
                         self.wait_pop_up(time_out=5, count=1)
 
     def arena(self):
+        if self.config.get('自主循环'):
+            self.ensure_main()
+            return
         self.info_set('current_task', 'arena')
         self.wait_click_ocr(match=re.compile('战役推进'), box='top_right', after_sleep=1, raise_if_not_found=True)
         self.wait_ocr(match=re.compile('补给作战'), box='top_right', raise_if_not_found=True)
@@ -300,6 +310,9 @@ class DailyTask(BaseGfTask):
         self.ensure_main()
 
     def bingqi(self):
+        if self.config.get('自主循环'):
+            self.ensure_main()
+            return
         self.info_set('current_task', 'bingqi')
         self.wait_click_ocr(match=re.compile('战役推进'), box='top_right', after_sleep=1, raise_if_not_found=True)
         self.wait_ocr(match=re.compile('补给作战'), box='top_right', raise_if_not_found=True)
@@ -493,6 +506,9 @@ class DailyTask(BaseGfTask):
         return challenged
 
     def battle(self):
+        if self.config.get('自主循环'):
+            self.ensure_main()
+            return
         self.info_set('current_task', 'battle')
         self.wait_click_ocr(match=re.compile('战役推进'), box='top_right', after_sleep=0.5, raise_if_not_found=True)
         self.wait_ocr(match=re.compile('补给作战'), box='top_right', raise_if_not_found=True)
