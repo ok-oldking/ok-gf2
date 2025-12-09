@@ -117,6 +117,8 @@ class BaseGfTask(BaseTask):
             else:
                 return True
         # if not self.do_handle_alert()[0]:
+        if box:=self.ocr(match=re.compile('^是否离开活动层'), log=True):
+            self.wait_click_ocr(match='确认',after_sleep=2)
         if box := self.ocr(box="bottom", match=["点击开始", "点击空白处关闭", "取消"],
                            log=True):
             self.click(box, after_sleep=2)
@@ -164,12 +166,31 @@ class BaseGfTask(BaseTask):
             self.sleep(2)
 
     def is_free_layer(self):
-        result = self.wait_ocr(match=['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7'], settle_time=5,
-                               time_out=10, box='top')
-        if len(result) >= 6:
-            return True
-        else:
-            return False
+        for i in range(2):
+            result = self.wait_ocr(match=['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7'], settle_time=5,
+                                   time_out=10, box='top')
+            if result:
+                if len(result) >= 6:
+                    return True
+        return False
+    #     boxes = self.ocr(match=['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7'], box='top', log=True)
+    #     self.log_info(f'is free layer {len(boxes)} {boxes}')
+    #     if len(boxes) >= 4:
+    #         if recheck_time:
+    #             self.sleep(recheck_time)
+    #             return self.is_main(recheck_time=0, esc=False)
+    #         else:
+    #             return True
+    #     # if not self.do_handle_alert()[0]:
+    #     if
+    #     if box := self.ocr(box="bottom", match=["点击开始", "点击空白处关闭", "取消"],
+    #                        log=True):
+    #         self.click(box, after_sleep=2)
+    #         return False
+    #     if esc:
+    #         if self.check_interval(2):
+    #             self.back()
+    #     self.next_frame()
 
     def fast_combat(self, battle_max=10, plus_x=0.616, plus_y=0.52, default_cost=10, set_cost=None, click_all=False,
                     activity=False):
