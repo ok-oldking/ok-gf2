@@ -13,16 +13,17 @@ class DailyTask(BaseGfTask):
         self.name = "一键日常"
         self.description = "收菜"
         self.default_config.update({
-            '当前物资关卡名称(用符号-分隔多个活动,无上下篇的活动不要加)': '铸碑者的黎明',
-            '是否是国际服(若勾选时无法正常执行公共区/调度室任务时请取消勾选)': False,
-            '自主循环':False,
+            '已确认启用游戏内全局自动功能': False,
+            '当前物资关卡名称': '铸碑者的黎明',
             '体力本': "军备解析",
+            '喝水': '1.087-1.4-0.5',
+            '吃饭': '1.0',
+            '是否是国际服': False,
+            '自主循环': False,
             '活动情报补给': False,
             '活动自律': True,
             '公共区/调度室': True,
             '活动层': True,
-            '喝水(AWD按住秒数,用-分隔)': '1.087-1.4-0.5',
-            '吃饭(S按住秒数)': '1.0',
             '购买免费礼包': True,
             '商店心愿单购买': True,
             '自动刷体力': True,
@@ -44,6 +45,8 @@ class DailyTask(BaseGfTask):
 
     def run(self):
         self.ensure_main(recheck_time=2, time_out=90)
+        if not self.config.get('已确认启用游戏内全局自动功能'):
+            self.confirm_auto_battle_up()
         tasks = [
             ('活动情报补给', self.activity_stamina),
             ('活动自律', self.activity),
@@ -63,22 +66,27 @@ class DailyTask(BaseGfTask):
                     func()
         self.log_info("日常完成!", notify=True)
 
+    def confirm_auto_battle_up(self):
+        self.info_set("tip:", "请先确认启用全局自动战斗(设置->其他->自动战斗设置),然后勾选确认项")
+        self.wait_click_ocr(match="owajduahefuihefusfhrygdysuhgusrgjduightudgdtih", time_out=1, raise_if_not_found=True)
+
     def go_drink(self):
-        down_times=str(self.config.get('喝水(AWD按住秒数,用-分隔)')).split('-')
-        self.send_key('a',down_time=float(down_times[0]))
+        down_times = str(self.config.get('喝水')).split('-')
+        self.send_key('a', down_time=float(down_times[0]))
         self.sleep(0.5)
-        self.send_key('w',down_time=float(down_times[1]))
+        self.send_key('w', down_time=float(down_times[1]))
         self.sleep(0.5)
-        self.send_key('d',down_time=float(down_times[2]))
+        self.send_key('d', down_time=float(down_times[2]))
         self.sleep(1)
         # self.send_key('f')
 
     def go_eat(self):
-        down_time=str(self.config.get('吃饭(S按住秒数)'))
-        self.send_key('s',down_time= float(down_time))
+        down_time = str(self.config.get('吃饭'))
+        self.send_key('s', down_time=float(down_time))
         self.send_key('d')
         self.sleep(1)
         # self.send_key('f')
+
     def free_time_layer(self):
         self.info_set('current_task', 'free_time_layer')
         for i in range(2):
@@ -87,23 +95,23 @@ class DailyTask(BaseGfTask):
                 self.sleep(2)
                 if i == 0:
                     self.go_drink()
-                    if result:=self.wait_ocr(match=re.compile('茶歇一刻')):
+                    if result := self.wait_ocr(match=re.compile('茶歇一刻')):
                         self.click_with_key('alt', result)
                     if self.wait_click_ocr(match='制作', box='bottom_right', after_sleep=0.5, time_out=10):
                         if self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2):
-                            results = self.skip_dialogs(end_match=['饮品加成', '确认'],time_out=60)
+                            results = self.skip_dialogs(end_match=['饮品加成', '确认'], time_out=60)
                             for result in results:
                                 if result.name == '确认':
                                     self.click(result, after_sleep=2)
                         self.wait_pop_up(count=1)
                 else:
                     self.go_eat()
-                    if result:=self.wait_ocr(match=re.compile('美味烹调')):
+                    if result := self.wait_ocr(match=re.compile('美味烹调')):
                         self.click_with_key('alt', result)
                     if self.wait_click_ocr(match='下一步', box='bottom_right', after_sleep=0.5, time_out=10):
                         if self.wait_click_ocr(match='确认邀请', box='bottom_right', after_sleep=0.5, time_out=2):
                             self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2)
-                            results = self.skip_dialogs(end_match=['前往战役', '确认'],time_out=60)
+                            results = self.skip_dialogs(end_match=['前往战役', '确认'], time_out=60)
                             for result in results:
                                 if result.name == '确认':
                                     self.click(result, after_sleep=2)
@@ -156,7 +164,7 @@ class DailyTask(BaseGfTask):
             self.ensure_main()
 
     def activity(self):
-        activity_wuzi_names = str(self.config.get('当前物资关卡名称(用符号-分隔多个活动,无上下篇的活动不要加)')).split(
+        activity_wuzi_names = str(self.config.get('当前物资关卡名称')).split(
             "-")
         self.info_set('current_task', 'activity')
         if self.wait_click_ocr(match=['限时开启'], box='top_right', after_sleep=2, raise_if_not_found=False,
@@ -222,7 +230,7 @@ class DailyTask(BaseGfTask):
 
     def gongongqu(self):
         self.info_set('current_task', 'public area')
-        is_global_ver = self.config.get('是否是国际服(若勾选时无法正常执行公共区/调度室任务时请取消勾选)')
+        is_global_ver = self.config.get('是否是国际服')
         coords_enter_list = [
             [0.524, 0.583, 0.643],  # True
             [0.478, 0.539, 0.6]  # False
@@ -243,10 +251,11 @@ class DailyTask(BaseGfTask):
         self.click(0.184, coords_enter_list[index][2])
         self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=2, raise_if_not_found=False)
         if self.config.get('自主循环'):
-            if self.wait_click_ocr(match=[re.compile('自主循环')], box='bottom_left',time_out=5, after_sleep=2,log=True):
-                 if self.wait_click_ocr(match='开始循环',box='bottom_left',time_out=5, after_sleep=2, log=True):
+            if self.wait_click_ocr(match=[re.compile('自主循环')], box='bottom_left', time_out=5, after_sleep=2,
+                                   log=True):
+                if self.wait_click_ocr(match='开始循环', box='bottom_left', time_out=5, after_sleep=2, log=True):
                     if self.wait_click_ocr(match=['确认'], after_sleep=2):
-                        if self.wait_click_ocr(match=['循环结束'],time_out=600, box='top', after_sleep=2):
+                        if self.wait_click_ocr(match=['循环结束'], time_out=600, box='top', after_sleep=2):
                             self.wait_click_ocr(match=['确认'], after_sleep=2)
         self.back()
         self.ensure_main()
@@ -459,7 +468,6 @@ class DailyTask(BaseGfTask):
                 return find_boxes_within_boundary(click, self.get_box_by_name(box))
             else:
                 return click
-
 
     def arena_remaining(self):
         return int(self.ocr(0.89, 0.01, 0.99, 0.1, match=stamina_re)[0].name.split('/')[0])

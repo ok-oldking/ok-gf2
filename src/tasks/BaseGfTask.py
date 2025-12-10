@@ -108,7 +108,7 @@ class BaseGfTask(BaseTask):
                     break
         self.sleep(2)
 
-    def is_main(self, recheck_time=0, esc=True):
+    def is_main(self, recheck_time=0.0, esc=True):
         boxes = self.ocr(match=['整备室', '公共区', '活动层', re.compile('招募')], box='right', log=True)
         self.log_info(f'is main {len(boxes)} {boxes}')
         if len(boxes) == 3:
