@@ -64,12 +64,12 @@ class BaseGfTask(BaseTask):
 
                 start_result = self.wait_ocr(match=['行动结束'], box='bottom_right',
                                              raise_if_not_found=False, time_out=15)
-            if start_result:
-                self.sleep(0.5)
-                if self.is_adb():
-                    self.click_relative(0.85, 0.05, after_sleep=1)
-                else:
-                    self.click_relative(0.88, 0.04, after_sleep=1)
+            # if start_result:
+            #     self.sleep(0.5)
+            #     if self.is_adb():
+            #         self.click_relative(0.85, 0.05, after_sleep=1)
+            #     else:
+            #         self.click_relative(0.88, 0.04, after_sleep=1)
 
         while results := self.skip_dialogs(
                 end_match=['任务完成', '任务失败', '战斗失败', '对战胜利', '对战失败', '确认', '确认结算'],
@@ -252,10 +252,14 @@ class BaseGfTask(BaseTask):
         self.info_set('can_fast_count', can_fast_count)
         self.info_set('click_battle_plus', 0)
         self.log_info(f'battle cost: {cost} current_stamina: {current} can_fast_count: {can_fast_count}')
-        for _ in range(can_fast_count - 1):
-            self.click(plus_x, plus_y)
-            self.info_incr('click_battle_plus')
+        if click_all:
+            self.click(plus_x,plus_y)
             self.sleep(0.2)
+        else:
+            for _ in range(can_fast_count - 1):
+                self.click(plus_x, plus_y)
+                self.info_incr('click_battle_plus')
+                self.sleep(0.2)
         self.sleep(1)
         remaining = current - can_fast_count * cost
         self.info_set('remaining_stamina', remaining)

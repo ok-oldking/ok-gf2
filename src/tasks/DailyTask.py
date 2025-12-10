@@ -243,10 +243,11 @@ class DailyTask(BaseGfTask):
         self.click(0.184, coords_enter_list[index][2])
         self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=2, raise_if_not_found=False)
         if self.config.get('自主循环'):
-            if self.wait_click_ocr(match=['自主循环'], box='bottom_left',time_out=5, after_sleep=2):
-                if self.wait_click_ocr(match=['确认'], after_sleep=2):
-                    if self.wait_click_ocr(match=['循环结束'],time_out=5, box='top', after_sleep=2):
-                        self.wait_click_ocr(match=['确认'], after_sleep=2)
+            if self.wait_click_ocr(match=[re.compile('自主循环')], box='bottom_left',time_out=5, after_sleep=2,log=True):
+                 if self.wait_click_ocr(match='开始循环',box='bottom_left',time_out=5, after_sleep=2, log=True):
+                    if self.wait_click_ocr(match=['确认'], after_sleep=2):
+                        if self.wait_click_ocr(match=['循环结束'],time_out=600, box='top', after_sleep=2):
+                            self.wait_click_ocr(match=['确认'], after_sleep=2)
         self.back()
         self.ensure_main()
 

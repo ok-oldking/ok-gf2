@@ -73,6 +73,7 @@ config = {
     'my_app': ['src.globals', 'Globals'],
     'onetime_tasks': [  # tasks to execute
         ["src.tasks.DailyTask", "DailyTask"],
+        ["src.tasks.WeeklyTask", "WeeklyTask"],
         ["src.tasks.ClearMapTask", "ClearMapTask"],
         ["src.tasks.PioneersTask","PioneersTask"],
         ["ok", "DiagnosisTask"],
