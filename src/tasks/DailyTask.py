@@ -91,7 +91,7 @@ class DailyTask(BaseGfTask):
                         self.click_with_key('alt', result)
                     if self.wait_click_ocr(match='制作', box='bottom_right', after_sleep=0.5, time_out=10):
                         if self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2):
-                            results = self.skip_dialogs(end_match=['饮品加成', '确认'])
+                            results = self.skip_dialogs(end_match=['饮品加成', '确认'],time_out=60)
                             for result in results:
                                 if result.name == '确认':
                                     self.click(result, after_sleep=2)
@@ -103,7 +103,7 @@ class DailyTask(BaseGfTask):
                     if self.wait_click_ocr(match='下一步', box='bottom_right', after_sleep=0.5, time_out=10):
                         if self.wait_click_ocr(match='确认邀请', box='bottom_right', after_sleep=0.5, time_out=2):
                             self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2)
-                            results = self.skip_dialogs(end_match=['前往战役', '确认'])
+                            results = self.skip_dialogs(end_match=['前往战役', '确认'],time_out=60)
                             for result in results:
                                 if result.name == '确认':
                                     self.click(result, after_sleep=2)
@@ -523,7 +523,7 @@ class DailyTask(BaseGfTask):
             self.back(after_sleep=1)
         target = self.config.get('体力本')
         cost_dict = {"深度搜索": 10, "军备解析": 10, "决策构象": 20, "定向精研": 30}
-        min_stamina = 10 if self.stamina_options.index(target) < 2 else 20
+        min_stamina = cost_dict.get(target, 30)
         if remaining >= min_stamina:
             ding_xiang = self.stamina_options.index(target) >= 3
             if ding_xiang:
