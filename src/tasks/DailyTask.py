@@ -67,7 +67,7 @@ class DailyTask(BaseGfTask):
         self.log_info("日常完成!", notify=True)
 
     def confirm_auto_battle_up(self):
-        raise Exception("请先确认启用全局自动战斗(设置->其他->自动战斗设置),然后勾选一键日常内的确认项")
+        raise Exception("请先确认启用游戏内的全局自动战斗(设置->其他->自动战斗设置),然后勾选本软件内一键日常内的确认项")
 
     def go_drink(self):
         down_times = str(self.config.get('喝水')).split('-')
