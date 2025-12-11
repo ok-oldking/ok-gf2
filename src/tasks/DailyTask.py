@@ -18,12 +18,12 @@ class DailyTask(BaseGfTask):
             '体力本': "军备解析",
             '喝水': '1.087-1.4-0.5',
             '吃饭': '1.0',
-            '是否是国际服': False,
-            '自主循环': False,
             '活动情报补给': False,
             '活动自律': True,
-            '公共区/调度室': True,
             '活动层': True,
+            '公共区/调度室': True,
+            '是否是国际服': False,
+            '自主循环': False,
             '购买免费礼包': True,
             '商店心愿单购买': True,
             '自动刷体力': True,
@@ -50,8 +50,8 @@ class DailyTask(BaseGfTask):
         tasks = [
             ('活动情报补给', self.activity_stamina),
             ('活动自律', self.activity),
-            ('公共区/调度室', self.gongongqu),
             ('活动层', self.free_time_layer),
+            ('公共区/调度室', self.gongongqu),
             ('购买免费礼包', self.shopping),
             ('自动刷体力', self.battle),
             ('竞技场', self.arena),
@@ -99,11 +99,9 @@ class DailyTask(BaseGfTask):
                         self.click_with_key('alt', result)
                     if self.wait_click_ocr(match='制作', box='bottom_right', after_sleep=0.5, time_out=10):
                         if self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2):
-                            results = self.skip_dialogs(end_match=['饮品加成', '确认'], time_out=60)
-                            for result in results:
-                                if result.name == '确认':
-                                    self.click(result, after_sleep=2)
-                        self.wait_pop_up(count=1)
+                            self.skip_dialogs(end_match=['饮品加成'], time_out=60)
+                            self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2)
+                            self.wait_pop_up(count=1)
                 else:
                     self.go_eat()
                     if result := self.wait_ocr(match=re.compile('美味烹调')):
@@ -111,10 +109,8 @@ class DailyTask(BaseGfTask):
                     if self.wait_click_ocr(match='下一步', box='bottom_right', after_sleep=0.5, time_out=10):
                         if self.wait_click_ocr(match='确认邀请', box='bottom_right', after_sleep=0.5, time_out=2):
                             self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2)
-                            results = self.skip_dialogs(end_match=['前往战役', '确认'], time_out=60)
-                            for result in results:
-                                if result.name == '确认':
-                                    self.click(result, after_sleep=2)
+                            self.skip_dialogs(end_match=['前往战役'], time_out=60)
+                            self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2)
                             self.wait_pop_up(count=1)
             self.back()
             self.ensure_main(time_out=50)
