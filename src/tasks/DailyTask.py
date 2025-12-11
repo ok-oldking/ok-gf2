@@ -98,9 +98,11 @@ class DailyTask(BaseGfTask):
                         self.click_with_key('alt', result)
                     if self.wait_click_ocr(match='制作', box='bottom_right', after_sleep=0.5, time_out=10):
                         if self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2):
-                            self.skip_dialogs(end_match=['饮品加成'], time_out=60)
+                            self.skip_dialogs(end_match=['饮品加成','确认'], time_out=60)
                             self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2)
                             self.wait_pop_up(count=1)
+                    else:
+                        self.back(after_sleep=2)
                 else:
                     self.go_eat()
                     if result := self.wait_ocr(match=re.compile('美味烹调')):
@@ -108,10 +110,11 @@ class DailyTask(BaseGfTask):
                     if self.wait_click_ocr(match='下一步', box='bottom_right', after_sleep=0.5, time_out=10):
                         if self.wait_click_ocr(match='确认邀请', box='bottom_right', after_sleep=0.5, time_out=2):
                             self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2)
-                            self.skip_dialogs(end_match=['前往战役'], time_out=60)
+                            self.skip_dialogs(end_match=['前往战役','确认'], time_out=60)
                             self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2)
                             self.wait_pop_up(count=1)
-            self.back()
+                    else:
+                        self.back(after_sleep=2)
             self.ensure_main(time_out=50)
 
     def activity_stamina(self):
