@@ -44,9 +44,9 @@ class DailyTask(BaseGfTask):
         # self.add_text_fix()
 
     def run(self):
-        self.ensure_main(recheck_time=2, time_out=90)
         if not self.config.get('已确认启用游戏内全局自动功能'):
             self.confirm_auto_battle_up()
+        self.ensure_main(recheck_time=2, time_out=90)
         tasks = [
             ('活动情报补给', self.activity_stamina),
             ('活动自律', self.activity),
@@ -67,8 +67,7 @@ class DailyTask(BaseGfTask):
         self.log_info("日常完成!", notify=True)
 
     def confirm_auto_battle_up(self):
-        self.info_set("tip:", "请先确认启用全局自动战斗(设置->其他->自动战斗设置),然后勾选确认项")
-        self.wait_click_ocr(match="owajduahefuihefusfhrygdysuhgusrgjduightudgdtih", time_out=1, raise_if_not_found=True)
+        raise Exception("请先确认启用全局自动战斗(设置->其他->自动战斗设置),然后勾选一键日常内的确认项")
 
     def go_drink(self):
         down_times = str(self.config.get('喝水')).split('-')
