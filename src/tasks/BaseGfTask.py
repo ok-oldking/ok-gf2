@@ -264,7 +264,21 @@ class BaseGfTask(BaseTask):
         remaining = current - can_fast_count * cost
         self.info_set('remaining_stamina', remaining)
         if can_fast_count > 0:
-            self.click(find_boxes_by_name(boxes, "确认"))
+            self.click(find_boxes_by_name(boxes, "确认"),after_sleep=2)
+            if self.click(find_boxes_by_name(boxes, "前往"),after_sleep=2):
+                if self.wait_click_ocr(match=['拆解'], box='top_right',after_sleep=2):
+                    if self.wait_click_ocr(match=['工业级及以下未培养'],after_sleep=2):
+                        if self.wait_click_ocr(match=['精密级及以下未培养'],after_sleep=2):
+                            while True:
+                                self.wait_click_ocr(match=['快捷选择'],after_sleep=2)
+                                ocr_select_num=self.wait_ocr(match=re.compile(stamina_re),box='bottom_right')
+                                if ocr_select_num:
+                                    self.wait_click_ocr(match=['拆解'],box='bottom_right',after_sleep=2)
+                                    self.wait_pop_up(count=1)
+                                else:
+                                    self.back(after_sleep=2)
+                                    break
+                self.click(find_boxes_by_name(boxes, "确认"), after_sleep=2)
             self.wait_pop_up(count=1)
             self.wait_ocr(match=['自律'], box='bottom_right', raise_if_not_found=True)
         else:
