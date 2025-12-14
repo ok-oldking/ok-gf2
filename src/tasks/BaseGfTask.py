@@ -1,8 +1,9 @@
 import re
 import threading
 import time
+from typing import Union, List
 
-from ok import BaseTask, find_boxes_by_name
+from ok import BaseTask, find_boxes_by_name, Box
 from ok import Logger
 
 logger = Logger.get_logger(__name__)
@@ -10,6 +11,14 @@ pop_ups = ['点击空白处关闭', '点击屏幕任意位置继续', '点击任
 number_re = re.compile(r"^\d+$")
 stamina_re = re.compile(r"^\d+/\d+")
 map_re = re.compile(r'-?\d{1,2}-\d{1,2}\*?')
+
+
+def parse_time_option(option: str) -> list[float]:
+    """
+    将配置中的时间字符串解析为浮点数列表
+    例如 "1.087-1.4-0.5" -> [1.087, 1.4, 0.5]
+    """
+    return [float(x) for x in option.split('-')]
 
 
 class BaseGfTask(BaseTask):
@@ -37,7 +46,7 @@ class BaseGfTask(BaseTask):
                 return result
             elif self.find_boxes(boxes, match=re.compile(r'回合$'), boundary='top_left'):
                 self.sleep(3)
-            elif pop_up := self.find_boxes(boxes, match=pop_ups):
+            elif self.find_boxes(boxes, match=pop_ups):
                 self.back()
                 self.sleep(2)
             else:
@@ -61,9 +70,10 @@ class BaseGfTask(BaseTask):
 
                 self.wait_click_ocr(match=['确认'], box='bottom', time_out=5,
                                     raise_if_not_found=True)
-
-                start_result = self.wait_ocr(match=['行动结束'], box='bottom_right',
-                                             raise_if_not_found=False, time_out=15)
+                self.wait_ocr(match=['行动结束'], box='bottom_right',
+                              raise_if_not_found=False, time_out=15)
+                # start_result = self.wait_ocr(match=['行动结束'], box='bottom_right',
+                #                              raise_if_not_found=False, time_out=15)
             # if start_result:
             #     self.sleep(0.5)
             #     if self.is_adb():
@@ -128,8 +138,9 @@ class BaseGfTask(BaseTask):
             if self.check_interval(2):
                 self.back()
         self.next_frame()
+        return None
 
-    def click(self, x=0, y=0, move_back=False, name=None, interval=-1, move=True,
+    def click(self, x: Union[float, Box, List[Box]] = 0.0, y: Union[float, int] = 0.0, move_back=False, name=None, interval=-1, move=True,
               down_time=0.01, after_sleep=0, key="left"):
         frame = self.frame
         super().click(x, y, move_back=move_back, name=name, move=move, down_time=0.04, after_sleep=after_sleep,
@@ -195,24 +206,6 @@ class BaseGfTask(BaseTask):
                 if len(result) >= 5:
                     return True
         return False
-    #     boxes = self.ocr(match=['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7'], box='top', log=True)
-    #     self.log_info(f'is free layer {len(boxes)} {boxes}')
-    #     if len(boxes) >= 4:
-    #         if recheck_time:
-    #             self.sleep(recheck_time)
-    #             return self.is_main(recheck_time=0, esc=False)
-    #         else:
-    #             return True
-    #     # if not self.do_handle_alert()[0]:
-    #     if
-    #     if box := self.ocr(box="bottom", match=["点击开始", "点击空白处关闭", "取消"],
-    #                        log=True):
-    #         self.click(box, after_sleep=2)
-    #         return False
-    #     if esc:
-    #         if self.check_interval(2):
-    #             self.back()
-    #     self.next_frame()
 
     def fast_combat(self, battle_max=10, plus_x=0.616, plus_y=0.52, default_cost=10, set_cost=None, click_all=False,
                     activity=False):
@@ -223,8 +216,8 @@ class BaseGfTask(BaseTask):
             plus_x = 0.65
             plus_y = 0.52
         boxes = self.ocr(log=True, threshold=0.8)
-        if next := self.find_boxes(boxes, '下一步', "bottom_right"):
-            self.click(next, after_sleep=1)
+        if next_step := self.find_boxes(boxes, '下一步', "bottom_right"):
+            self.click(next_step, after_sleep=1)
             boxes = self.ocr(log=True, threshold=0.8)
             default_cost = 30
         current = self.find_boxes(boxes, match=[stamina_re, number_re],
@@ -263,27 +256,56 @@ class BaseGfTask(BaseTask):
         self.sleep(1)
         remaining = current - can_fast_count * cost
         self.info_set('remaining_stamina', remaining)
-        if can_fast_count > 0:
-            self.click(find_boxes_by_name(boxes, "确认"),after_sleep=2)
-            if self.click(find_boxes_by_name(boxes, "前往"),after_sleep=2):
-                if self.wait_click_ocr(match=['拆解'], box='top_right',after_sleep=2):
-                    if self.wait_click_ocr(match=['工业级及以下未培养'],after_sleep=2):
-                        if self.wait_click_ocr(match=['精密级及以下未培养'],after_sleep=2):
-                            while True:
-                                self.wait_click_ocr(match=['快捷选择'],after_sleep=2)
-                                ocr_select_num=self.wait_ocr(match=re.compile(stamina_re),box='bottom_right')
-                                if ocr_select_num:
-                                    self.wait_click_ocr(match=['拆解'],box='bottom_right',after_sleep=2)
-                                    self.wait_pop_up(count=1)
-                                else:
-                                    self.back(after_sleep=2)
-                                    break
-                self.click(find_boxes_by_name(boxes, "确认"), after_sleep=2)
-            self.wait_pop_up(count=1)
-            self.wait_ocr(match=['自律'], box='bottom_right', raise_if_not_found=True)
-        else:
+        if can_fast_count <= 0:
             self.click(find_boxes_by_name(boxes, "取消"))
+            return remaining
+
+        self.click(find_boxes_by_name(boxes, "确认"), after_sleep=2)
+
+        if self.click(find_boxes_by_name(boxes, "前往"), after_sleep=2):
+            if self.enter_fast_disassemble():
+                self.fast_disassemble_loop(stamina_re)
+
+            self.click(find_boxes_by_name(boxes, "确认"), after_sleep=2)
+
+        self.wait_pop_up(count=1)
+        self.wait_ocr(match=['自律'], box='bottom_right', raise_if_not_found=True)
+
         return remaining
+
+    def fast_disassemble_loop(self, model_re):
+        while self.wait_click_ocr(match=['快捷选择'], after_sleep=2):
+            ocr_select_num = self.wait_ocr(
+                match=re.compile(model_re),
+                box='bottom_right'
+            )
+
+            if not ocr_select_num:
+                self.back(after_sleep=2)
+                break
+
+            self.wait_click_ocr(match=['拆解'], box='bottom_right', after_sleep=2)
+            self.wait_pop_up(count=1)
+
+    def enter_fast_disassemble(self):
+        # 拆解入口是硬条件
+        if not self.wait_click_ocr(match=['拆解'], box='top_right', after_sleep=2):
+            return False
+
+        # 以下是“尽力而为”的筛选条件
+        self.wait_click_ocr(match=['工业级及以下未培养'], after_sleep=2)
+        self.wait_click_ocr(match=['精密级及以下未培养'], after_sleep=2)
+
+        return True
+
+    def loop_click_ocr(self, match_list, box='bottom_right', pop_up_count=1, sleep_after_click=0.5):
+        """
+        循环点击 OCR 匹配元素，直到找不到为止。
+        处理弹窗 pop_up_count。
+        """
+        while self.wait_click_ocr(match=match_list, box=box, raise_if_not_found=False, after_sleep=sleep_after_click):
+            if pop_up_count:
+                self.wait_pop_up(count=pop_up_count)
 
     def wait_pop_up(self, time_out=15, other=None, box='bottom', count=100):
         start = time.time()
@@ -294,7 +316,20 @@ class BaseGfTask(BaseTask):
             else:
                 check.append(other)
         found_count = 0
-        while self.wait_ocr(match=pop_ups, box=box, settle_time=2, time_out=(time_out - (time.time() - start)),
+        while self.wait_ocr(match=pop_ups, box=box, settle_time=2, time_out=int(time_out - (time.time() - start)),
                             raise_if_not_found=False) and found_count < count:
             found_count += 1
             self.back(after_sleep=3)
+
+    def press_keys_sequence(self, keys, times, sleep_between=0.5, sleep_after_last=False):
+        """
+        按顺序按下按键，每次按键后等待 sleep_between 秒，可选择最后一个按键后不等待。
+        当按键持续时间为 0 时，不传 down_time 参数给 send_key。
+        """
+        for i, (key, t) in enumerate(zip(keys, times)):
+            if t:  # t != 0
+                self.send_key(key, down_time=t)
+            else:  # t == 0
+                self.send_key(key)
+            if i < len(keys) - 1 or sleep_after_last:
+                self.sleep(sleep_between)
