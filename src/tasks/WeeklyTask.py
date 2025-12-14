@@ -10,9 +10,11 @@ class WeeklyTask(BaseGfTask):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.another_ver = None
         self.name = "周常"
         self.description = ""
         self.default_config.update({
+            '出现反复横跳错误可尝试开启此项': False,
             '首领挑战':True,
             '峰值推定':True,
         })
@@ -21,7 +23,8 @@ class WeeklyTask(BaseGfTask):
                                       'options': self.stamina_options}
 
     def run(self):
-        self.ensure_main(recheck_time=2, time_out=90)
+        self.ensure_main(another_ver=self.another_ver,recheck_time=2, time_out=90)
+        self.another_ver = self.config.get('出现反复横跳错误可尝试开启此项')
         tasks = [
             ('首领挑战',self.boss_fast),
             ('峰值推定',self.peak_estimate_tion)
@@ -38,7 +41,7 @@ class WeeklyTask(BaseGfTask):
         self.wait_click_ocr(match=re.compile('模拟作战'), box='top_right', raise_if_not_found=True)
         self.wait_click_ocr(match=re.compile('首领挑战'), raise_if_not_found=True)
         self.fast_combat(set_cost=1,click_all=True)
-        self.ensure_main()
+        self.ensure_main(another_ver=self.another_ver)
     def peak_estimate_tion(self):
         self.info_set('current_task', 'peak_estimate_tion')
         self.wait_click_ocr(match=re.compile('战役推进'), box='top_right', after_sleep=0.5, raise_if_not_found=True)
@@ -75,7 +78,7 @@ class WeeklyTask(BaseGfTask):
                             self.back(after_sleep=2)
                 break
             self.back()
-        self.ensure_main()
+        self.ensure_main(another_ver=self.another_ver)
 
 
 

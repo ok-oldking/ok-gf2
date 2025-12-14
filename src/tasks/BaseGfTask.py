@@ -23,9 +23,9 @@ def parse_time_option(option: str) -> list[float]:
 
 class BaseGfTask(BaseTask):
 
-    def ensure_main(self, recheck_time=1, time_out=30, esc=True):
+    def ensure_main(self, recheck_time=1, time_out=30, esc=True ,another_ver = False):
         self.info_set('current_task', 'go_to_main')
-        if not self.wait_until(lambda: self.is_main(recheck_time=recheck_time, esc=esc), time_out=time_out):
+        if not self.wait_until(lambda: self.is_main(recheck_time=recheck_time, esc=esc,another_ver=another_ver), time_out=time_out):
             raise Exception("请从游戏主页进入")
 
     def skip_dialogs(self, end_match, end_box=None, time_out=120, has_dialog=True):
@@ -118,7 +118,7 @@ class BaseGfTask(BaseTask):
                     break
         self.sleep(2)
 
-    def is_main(self, recheck_time=0.0, esc=True):
+    def is_main(self, recheck_time=0.0, esc=True, another_ver=False):
         boxes = self.ocr(match=['整备室', '公共区', '活动层', re.compile('招募')], box='right', log=True)
         self.log_info(f'is main {len(boxes)} {boxes}')
         if len(boxes) == 3:
@@ -135,8 +135,11 @@ class BaseGfTask(BaseTask):
             self.click(box, after_sleep=2)
             return False
         if esc:
-            if self.check_interval(2):
-                self.back()
+            if another_ver:
+                self.back(after_sleep=2)
+            else:
+                if self.check_interval(2):
+                    self.back()
         self.next_frame()
         return None
 
