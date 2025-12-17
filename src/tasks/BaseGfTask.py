@@ -210,7 +210,7 @@ class BaseGfTask(BaseTask):
     def is_free_layer(self):
         for i in range(2):
             result = self.wait_ocr(match=['Esc', 'P', 'M', 'F1', 'F2', 'F3', 'F4'], settle_time=5,
-                                   time_out=20, box='top')
+                                   time_out=60, box='top')
             if result:
                 if len(result) >= 5:
                     return True
