@@ -23,9 +23,10 @@ def parse_time_option(option: str) -> list[float]:
 
 class BaseGfTask(BaseTask):
 
-    def ensure_main(self, recheck_time=1, time_out=30, esc=True ,another_ver = False):
+    def ensure_main(self, recheck_time=1, time_out=30, esc=True, another_ver=False):
         self.info_set('current_task', 'go_to_main')
-        if not self.wait_until(lambda: self.is_main(recheck_time=recheck_time, esc=esc,another_ver=another_ver), time_out=time_out):
+        if not self.wait_until(lambda: self.is_main(recheck_time=recheck_time, esc=esc, another_ver=another_ver),
+                               time_out=time_out):
             raise Exception("请从游戏主页进入")
 
     def skip_dialogs(self, end_match, end_box=None, time_out=120, has_dialog=True):
@@ -56,7 +57,7 @@ class BaseGfTask(BaseTask):
             self.next_frame()
         raise Exception('跳过剧情超时!')
 
-    def auto_battle(self, end_match=None, end_box=None, has_dialog=False):
+    def auto_battle(self, end_match=None, end_box=None, has_dialog=False, need_click_auto=False):
         self.info_set('current_task', 'auto battle')
         result = self.skip_dialogs(end_match=['作战开始', '行动结束'], end_box='bottom', time_out=120,
                                    has_dialog=has_dialog)
@@ -74,12 +75,12 @@ class BaseGfTask(BaseTask):
                               raise_if_not_found=False, time_out=15)
                 # start_result = self.wait_ocr(match=['行动结束'], box='bottom_right',
                 #                              raise_if_not_found=False, time_out=15)
-            # if start_result:
-            #     self.sleep(0.5)
-            #     if self.is_adb():
-            #         self.click_relative(0.85, 0.05, after_sleep=1)
-            #     else:
-            #         self.click_relative(0.88, 0.04, after_sleep=1)
+            if start_result and need_click_auto:
+                self.sleep(0.5)
+                if self.is_adb():
+                    self.click_relative(0.85, 0.05, after_sleep=1)
+                else:
+                    self.click_relative(0.88, 0.04, after_sleep=1)
 
         while results := self.skip_dialogs(
                 end_match=['任务完成', '任务失败', '战斗失败', '对战胜利', '对战失败', '确认', '确认结算'],
@@ -129,7 +130,7 @@ class BaseGfTask(BaseTask):
                 return True
         # if not self.do_handle_alert()[0]:
         if self.ocr(match=re.compile('^是否离开活动层'), log=True):
-            self.wait_click_ocr(match='确认',after_sleep=2)
+            self.wait_click_ocr(match='确认', after_sleep=2)
         if box := self.ocr(box="bottom", match=["点击开始", "点击空白处关闭", "取消"],
                            log=True):
             self.click(box, after_sleep=2)
@@ -143,7 +144,8 @@ class BaseGfTask(BaseTask):
         self.next_frame()
         return None
 
-    def click(self, x: Union[float, Box, List[Box]] = 0.0, y: Union[float, int] = 0.0, move_back=False, name=None, interval=-1, move=True,
+    def click(self, x: Union[float, Box, List[Box]] = 0.0, y: Union[float, int] = 0.0, move_back=False, name=None,
+              interval=-1, move=True,
               down_time=0.01, after_sleep=0, key="left"):
         frame = self.frame
         super().click(x, y, move_back=move_back, name=name, move=move, down_time=0.04, after_sleep=after_sleep,
@@ -156,21 +158,25 @@ class BaseGfTask(BaseTask):
         self.send_key('esc', down_time=0.04, after_sleep=after_sleep)
         if self.debug:
             self.screenshot('back', frame=frame)
+
     def free_layer_click(self, x=0, y=0, move_back=False, name=None, interval=-1, move=True,
-              down_time=0.01, after_sleep=0, key="left"):
+                         down_time=0.01, after_sleep=0, key="left"):
         frame = self.frame
         self.send_key_down('alt')
-        self.click(x, y, move_back=move_back, name=name, move=move,down_time=down_time,after_sleep=after_sleep,interval=interval,key=key)
+        self.click(x, y, move_back=move_back, name=name, move=move, down_time=down_time, after_sleep=after_sleep,
+                   interval=interval, key=key)
         self.send_key_up('alt')
         if self.debug:
             self.screenshot('free_layer_click', frame=frame)
 
-    def click_with_key(self, hold_key, result,delay1=1,delay2=0.5):
+    def click_with_key(self, hold_key, result, delay1=1, delay2=0.5):
         def start_task1():
-            self.send_key(key=hold_key,down_time=delay1)
+            self.send_key(key=hold_key, down_time=delay1)
+
         def start_task2():
             time.sleep(delay2)  # 控制任务2启动延迟
             self.click(result)
+
         t1 = threading.Thread(target=start_task1)
         t2 = threading.Thread(target=start_task2)
         t1.start()
@@ -197,13 +203,13 @@ class BaseGfTask(BaseTask):
 
     def out_free_layer(self):
         self.info_set('current_task', 'out_free_layer')
-        while not self.wait_click_ocr(match=['确认'],time_out=2):
+        while not self.wait_click_ocr(match=['确认'], time_out=2):
             self.back()
             self.sleep(2)
 
     def is_free_layer(self):
         for i in range(2):
-            result = self.wait_ocr(match=['Esc','P','M','F1', 'F2', 'F3', 'F4'], settle_time=5,
+            result = self.wait_ocr(match=['Esc', 'P', 'M', 'F1', 'F2', 'F3', 'F4'], settle_time=5,
                                    time_out=20, box='top')
             if result:
                 if len(result) >= 5:
@@ -249,7 +255,7 @@ class BaseGfTask(BaseTask):
         self.info_set('click_battle_plus', 0)
         self.log_info(f'battle cost: {cost} current_stamina: {current} can_fast_count: {can_fast_count}')
         if click_all:
-            self.click(plus_x,plus_y)
+            self.click(plus_x, plus_y)
             self.sleep(0.2)
         else:
             for _ in range(can_fast_count - 1):

@@ -34,7 +34,7 @@ class DailyTask(BaseGfTask):
             '体力本': "军备解析",
             '喝水': '1.087-1.4-0.5',
             '吃饭': '1.0',
-            '活动情报补给': False,
+            '闪耀星愿': True,
             '活动自律': True,
             '活动层': True,
             '公共区/调度室': True,
@@ -65,10 +65,10 @@ class DailyTask(BaseGfTask):
         if not self.config.get('已确认启用游戏内全局自动功能'):
             self.confirm_auto_battle_up()
 
-        self.ensure_main(another_ver=self.another_ver,recheck_time=2, time_out=90)
-        self.another_ver=self.config.get('出现反复横跳错误可尝试开启此项')
+        self.ensure_main(another_ver=self.another_ver, recheck_time=2, time_out=90)
+        self.another_ver = self.config.get('出现反复横跳错误可尝试开启此项')
         tasks = [
-            ('活动情报补给', self.activity_stamina),
+            ('闪耀星愿', self.activities),
             ('活动自律', self.activity),
             ('活动层', self.free_time_layer),
             ('公共区/调度室', self.gongongqu),
@@ -146,9 +146,9 @@ class DailyTask(BaseGfTask):
                             self.wait_pop_up(count=1)
                     else:
                         self.back(after_sleep=2)
-            self.ensure_main(another_ver=self.another_ver,time_out=60)
+            self.ensure_main(another_ver=self.another_ver, time_out=60)
 
-    def activity_stamina(self):
+    def activities(self):
         self.info_set('current_task', 'activity_stamina')
         self.wait_click_ocr(match=['活动'], box='bottom_right', after_sleep=0.5, raise_if_not_found=True)
         if self.wait_click_ocr(match=['情报补给'], box='left', time_out=3,
@@ -156,6 +156,12 @@ class DailyTask(BaseGfTask):
             while self.wait_click_ocr(match=['领取'], box='bottom_right', time_out=3,
                                       raise_if_not_found=False, after_sleep=1):
                 self.wait_pop_up(time_out=6)
+        self.wait_click_ocr(match=[re.compile("闪耀星愿")], box='left', time_out=3, settle_time=2)
+        self.wait_click_ocr(match=['前往'], box='right', time_out=3, settle_time=2)
+        if self.wait_click_ocr(match=['开始作战'], box='bottom_right', time_out=3, settle_time=2):
+            self.auto_battle(need_click_auto=True)
+        self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, settle_time=2)
+        self.fast_combat(click_all=True)
         self.ensure_main(another_ver=self.another_ver)
 
     def claim_quest(self):
