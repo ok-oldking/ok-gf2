@@ -216,7 +216,7 @@ class BaseGfTask(BaseTask):
                     return True
         return False
 
-    def fast_combat(self, battle_max=10, plus_x=0.616, plus_y=0.52, default_cost=10, set_cost=None, click_all=False,
+    def fast_combat(self, *, set_cost, battle_max=10, plus_x=0.616, plus_y=0.52, click_all=False,
                     activity=False):
         self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, raise_if_not_found=True)
         if activity:
@@ -228,7 +228,7 @@ class BaseGfTask(BaseTask):
         if next_step := self.find_boxes(boxes, '下一步', "bottom_right"):
             self.click(next_step, after_sleep=1)
             boxes = self.ocr(log=True, threshold=0.8)
-            default_cost = 30
+            # default_cost = 30
         current = self.find_boxes(boxes, match=[stamina_re, number_re],
                                   boundary=self.box_of_screen(0.84, 0, 0.99, 0.10))
         if current:
@@ -242,10 +242,11 @@ class BaseGfTask(BaseTask):
                 self.screenshot('fast_no_zilv')
             self.log_info("自律没有弹窗, 可能是调度权限不足")
             return current
-        if set_cost:
-            cost = set_cost
-        else:
-            cost = self.find_cost(boxes, default=default_cost)
+        cost = set_cost
+        # if set_cost:
+        #     cost = set_cost
+        # else:
+        #     cost = self.find_cost(boxes, default=default_cost)
 
         self.info_set('current_stamina', current)
         self.info_set('battle_cost', cost)

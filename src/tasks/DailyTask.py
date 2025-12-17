@@ -238,7 +238,7 @@ class DailyTask(BaseGfTask):
                         battles = self.wait_ocr(match=map_re, time_out=4)
                         if battles:
                             self.click(battles[-1])
-                            self.fast_combat(6, default_cost=1, activity=True)
+                            self.fast_combat(set_cost=1,battle_max= 6, activity=True)
             else:
                 self.log_info("找不到开启的活动")
         self.ensure_main(another_ver=self.another_ver)

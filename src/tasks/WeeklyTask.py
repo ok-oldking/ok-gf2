@@ -1,7 +1,6 @@
-from ok import Logger
-
-from src.tasks.BaseGfTask import BaseGfTask, map_re
 import re
+from ok import Logger
+from src.tasks.BaseGfTask import BaseGfTask
 logger = Logger.get_logger(__name__)
 pattern_kt = re.compile(r'^(?!(?=.*开拓之王)(?=.*区域开拓))(?:开拓之王|区域开拓(?:I|II|III|IV|V|VI|VII))$')
 
