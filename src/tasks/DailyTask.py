@@ -161,7 +161,7 @@ class DailyTask(BaseGfTask):
         if self.wait_click_ocr(match=['开始作战'], box='bottom_right', time_out=3, settle_time=2):
             self.auto_battle(need_click_auto=True)
         self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, settle_time=2)
-        self.fast_combat(click_all=True)
+        self.fast_combat(click_all=True, set_cost=1)
         self.ensure_main(another_ver=self.another_ver)
 
     def claim_quest(self):
