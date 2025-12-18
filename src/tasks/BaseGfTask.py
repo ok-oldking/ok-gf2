@@ -57,7 +57,7 @@ class BaseGfTask(BaseTask):
             self.next_frame()
         raise Exception('跳过剧情超时!')
 
-    def auto_battle(self, end_match=None, end_box=None, has_dialog=False, need_click_auto=False):
+    def auto_battle(self, end_match=None, end_box=None, has_dialog=False, need_click_auto=False,has_dialog_behind_start=False):
         self.info_set('current_task', 'auto battle')
         result = self.skip_dialogs(end_match=['作战开始', '行动结束'], end_box='bottom', time_out=120,
                                    has_dialog=has_dialog)
@@ -75,6 +75,11 @@ class BaseGfTask(BaseTask):
                               raise_if_not_found=False, time_out=15)
                 # start_result = self.wait_ocr(match=['行动结束'], box='bottom_right',
                 #                              raise_if_not_found=False, time_out=15)
+            if not start_result and has_dialog_behind_start:
+                start_result=self.skip_dialogs(end_match=['作战开始', '行动结束'], end_box='bottom', time_out=120,
+                                   has_dialog=has_dialog)
+                if self.wait_ocr(match='注意',box='top'):
+                    self.wait_click_ocr(match='取消',after_sleep=2)
             if start_result and need_click_auto:
                 self.sleep(0.5)
                 if self.is_adb():
