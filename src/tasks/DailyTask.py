@@ -2,7 +2,7 @@ import re
 
 from ok import Logger, find_boxes_by_name, find_boxes_within_boundary
 from src.tasks.BaseGfTask import BaseGfTask, pop_ups, stamina_re, map_re, parse_time_option
-from src.tasks.CommunityDailyTask import CommunityClient
+from src.tasks.CommunityClient import CommunityClient
 
 logger = Logger.get_logger(__name__)
 
