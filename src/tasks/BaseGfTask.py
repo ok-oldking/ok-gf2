@@ -224,6 +224,10 @@ class BaseGfTask(BaseTask):
     def fast_combat(self, *, set_cost, battle_max=10, plus_x=0.616, plus_y=0.52, click_all=False,
                     activity=False):
         self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, raise_if_not_found=True)
+        if self.wait_ocr(match=re.compile('坍塌晶条'),log=True):
+            self.wait_click_ocr(match=['取消'],  after_sleep=2, raise_if_not_found=True)
+            self.wait_ocr(match=['自律'], box='bottom_right', raise_if_not_found=True)
+            return 0
         if activity:
             click_all = True
         if click_all:

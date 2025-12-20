@@ -2,6 +2,7 @@ import re
 
 from ok import Logger, find_boxes_by_name, find_boxes_within_boundary
 from src.tasks.BaseGfTask import BaseGfTask, pop_ups, stamina_re, map_re, parse_time_option
+from src.tasks.CommunityDailyTask import CommunityClient
 
 logger = Logger.get_logger(__name__)
 
@@ -32,8 +33,12 @@ class DailyTask(BaseGfTask):
             '出现反复横跳错误可尝试开启此项': False,
             '当前物资关卡名称': '铸碑者的黎明',
             '体力本': "军备解析",
+            '用户名': "",
+            '密码': "",
             '喝水': '1.087-1.4-0.5',
             '吃饭': '1.0',
+            "社区每日": False,
+            '邮件': True,
             '闪耀星愿': True,
             '活动自律': True,
             '活动层': True,
@@ -49,7 +54,6 @@ class DailyTask(BaseGfTask):
             '尘烟': True,
             '领任务': True,
             '大月卡': True,
-            '邮件': True,
         })
 
     def _init_stamina_options(self):
@@ -68,6 +72,8 @@ class DailyTask(BaseGfTask):
         self.ensure_main(another_ver=self.another_ver, recheck_time=2, time_out=90)
         self.another_ver = self.config.get('出现反复横跳错误可尝试开启此项')
         tasks = [
+            ("社区每日", self.community_daily),
+            ('邮件', self.mail),
             ('闪耀星愿', self.activities),
             ('活动自律', self.activity),
             ('活动层', self.free_time_layer),
@@ -78,7 +84,6 @@ class DailyTask(BaseGfTask):
             ('班组', self.guild),
             ('领任务', self.claim_quest),
             ('大月卡', self.xunlu),
-            ('邮件', self.mail),
         ]
 
         failed_tasks = []
@@ -96,6 +101,13 @@ class DailyTask(BaseGfTask):
             self.log_info(f"以下任务未完成或失败: {failed_tasks}", notify=True)
         else:
             self.log_info("日常完成!", notify=True)
+
+    def community_daily(self):
+        user = self.config.get('用户名')
+        pwd = self.config.get('密码')
+        com = CommunityClient()
+        self.info_set('current_task', 'community_daily')
+        com.main(user, pwd)
 
     def confirm_auto_battle_up(self):
         """
@@ -158,9 +170,13 @@ class DailyTask(BaseGfTask):
                 self.wait_pop_up(time_out=6)
         self.wait_click_ocr(match=[re.compile("闪耀星愿")], box='left', time_out=3, settle_time=2)
         self.wait_click_ocr(match=['前往'], box='right', time_out=3, settle_time=2)
-        if self.wait_click_ocr(match=['开始作战'], box='bottom_right', time_out=3, settle_time=2):
-            self.auto_battle(need_click_auto=True)
-        self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, settle_time=2)
+        if self.wait_click_ocr(match=['开始作战'], box='bottom_right', time_out=3, settle_time=2, after_sleep=2):
+            if not self.wait_click_ocr(match=['取消'], time_out=1, after_sleep=2):
+                self.auto_battle(need_click_auto=True)
+                self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, settle_time=2)
+            else:
+                self.ensure_main(another_ver=self.another_ver)
+                return
         self.fast_combat(click_all=True, set_cost=1)
         self.ensure_main(another_ver=self.another_ver)
 
@@ -238,7 +254,7 @@ class DailyTask(BaseGfTask):
                         battles = self.wait_ocr(match=map_re, time_out=4)
                         if battles:
                             self.click(battles[-1])
-                            self.fast_combat(set_cost=1,battle_max= 6, activity=True)
+                            self.fast_combat(set_cost=1, battle_max=6, activity=True)
             else:
                 self.log_info("找不到开启的活动")
         self.ensure_main(another_ver=self.another_ver)
