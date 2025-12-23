@@ -68,11 +68,14 @@ class DailyTask(BaseGfTask):
     def run(self):
         if not self.config.get('已确认启用游戏内全局自动功能'):
             self.confirm_auto_battle_up()
-
-        self.ensure_main(another_ver=self.another_ver, recheck_time=2, time_out=90)
         self.another_ver = self.config.get('出现反复横跳错误可尝试开启此项')
         tasks = [
             ("社区每日", self.community_daily),
+            ("ensure_main", lambda: self.ensure_main(
+                another_ver=self.another_ver,
+                recheck_time=2,
+                time_out=90
+            )),
             ('邮件', self.mail),
             ('闪耀星愿', self.activities),
             ('活动自律', self.activity),
@@ -89,7 +92,7 @@ class DailyTask(BaseGfTask):
         failed_tasks = []
 
         for key, func in tasks:
-            if not self.config.get(key):
+            if key!="ensure_main" and not self.config.get(key):
                 continue
 
             result = func()  # 不捕获异常，异常自然向上传递

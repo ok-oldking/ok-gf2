@@ -32,7 +32,7 @@ class CommunityClient(BaseTask):
                 method=method,
                 url=url,
                 headers=headers,
-                data=json.dumps(data) if data else None,
+                data=json.dumps(data) if data is not None else None,
                 timeout=15,
                 proxies=self.PROXIES,
             )
@@ -165,13 +165,8 @@ class CommunityClient(BaseTask):
         headers = {**self.COMMON_HEADERS, "Authorization": auth_token}
 
         try:
-            resp = requests.post(
-                url,
-                headers=headers,
-                json={},
-                timeout=15,
-            )
-            data = resp.json()
+            data = self.request_json("POST", url, headers=headers, data={})
+
         except Exception as e:
             self.log_info(f"请求或解析 JSON 出错:{e}")
             return None

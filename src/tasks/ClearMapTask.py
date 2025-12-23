@@ -39,7 +39,7 @@ class ClearMapTask(BaseGfTask):
             self.sleep(1)
             if boxes := self.wait_ocr(box="right", match=["特殊奖励", '观看', '挑战'], time_out=3, log=True):
                 # self.log_debug(f'特殊奖励 {boxes}')
-                if self.find_boxes(boxes, match=["特殊奖励", '观看']):
+                if self.find_boxes(boxes, match=["特殊奖励"]):
                     text = self.find_boxes(boxes, match=['观看', '挑战'])
                     self.click(text)
                     count += 1
