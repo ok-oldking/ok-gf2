@@ -1,3 +1,5 @@
+import os
+
 version = "v5.0.11"
 
 config = {
@@ -26,6 +28,12 @@ config = {
         # 'check_night_light': True,
         'force_no_night_light': False,
         'require_bg': True
+    },
+    'template_matching': {
+        'coco_feature_json': os.path.join('assets', 'result.json'),
+        'default_horizontal_variance': 0.002,
+        'default_vertical_variance': 0.002,
+        'default_threshold': 0.8,
     },
     'start_timeout': 120,  # default 60
     'window_size': {

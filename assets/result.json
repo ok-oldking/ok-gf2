@@ -1,0 +1,29 @@
+{
+  "images": [
+    {
+      "id": 1,
+      "file_name": "imgs/ggq_can_button.png",
+      "width": 36,
+      "height": 36
+    }
+  ],
+    "categories": [
+        {
+            "id": 1,
+            "name": "ggq_can_button"
+        }
+    ],
+    "annotations": [
+        {
+            "id": 1,
+            "image_id": 1,
+            "category_id": 1,
+            "bbox": [
+                336,
+                500,
+                38,
+                38
+            ]
+        }
+    ]
+}

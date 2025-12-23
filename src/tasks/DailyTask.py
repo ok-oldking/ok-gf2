@@ -43,7 +43,6 @@ class DailyTask(BaseGfTask):
             '活动自律': True,
             '活动层': True,
             '公共区/调度室': True,
-            '是否是国际服': False,
             '自主循环': False,
             '购买免费礼包': True,
             '商店心愿单购买': True,
@@ -92,7 +91,7 @@ class DailyTask(BaseGfTask):
         failed_tasks = []
 
         for key, func in tasks:
-            if key!="ensure_main" and not self.config.get(key):
+            if key != "ensure_main" and not self.config.get(key):
                 continue
 
             result = func()  # 不捕获异常，异常自然向上传递
@@ -284,22 +283,21 @@ class DailyTask(BaseGfTask):
 
     def gongongqu(self):
         self.info_set('current_task', 'public area')
-        is_global_ver = self.config.get('是否是国际服')
-        coords_enter_list = [
-            [0.524, 0.583, 0.643],  # True
-            [0.478, 0.539, 0.6]  # False
-        ]
-        index = 0 if is_global_ver else 1
         self.wait_click_ocr(match=['委托'], box='right', after_sleep=2.5, raise_if_not_found=True)
+        buttons = self.find_feature(feature_name='ggq_can_button', box='left',
+                                    horizontal_variance=1.0,
+                                    vertical_variance=1.0,
+                                    )
         if not self.config.get('自主循环'):
-            self.click(0.184, coords_enter_list[index][0])
+            self.click(buttons[0])
             if self.wait_ocr(match=['最小'], time_out=4, settle_time=2, log=True):
                 self.wait_click_ocr(match=['确认'], after_sleep=2.5, raise_if_not_found=True)
         self.click(0.042, 0.541, after_sleep=2)
-        self.click(0.184, coords_enter_list[index][1], after_sleep=2)
+        self.click(buttons[1], after_sleep=2)
         self.click(0.042, 0.541, after_sleep=2)
-        self.click(0.184, coords_enter_list[index][2], after_sleep=2)
-        self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=2, raise_if_not_found=False)
+        if len(buttons) > 2:
+            self.click(buttons[2], after_sleep=2)
+            self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=2, raise_if_not_found=False)
         if self.config.get('自主循环') and \
                 self.wait_click_ocr(match=[re.compile('自主循环')], box='bottom_left', time_out=5, after_sleep=2,
                                     log=True) and \

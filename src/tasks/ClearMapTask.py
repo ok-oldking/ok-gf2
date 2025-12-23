@@ -31,7 +31,7 @@ class ClearMapTask(BaseGfTask):
                     clicked.append(m.name)
                     checked = True
                     last_clicked = m
-                    self.click(m)
+                    self.click(m,after_sleep=2)
                     break
             if not checked:
                 self.log_info(f'推图完成, 共{count}个!', notify=True)
@@ -41,7 +41,7 @@ class ClearMapTask(BaseGfTask):
                 # self.log_debug(f'特殊奖励 {boxes}')
                 if self.find_boxes(boxes, match=["特殊奖励"]):
                     text = self.find_boxes(boxes, match=['观看', '挑战'])
-                    self.click(text)
+                    self.click(text,after_sleep=2)
                     count += 1
                     if text[0].name == '挑战':
                         self.auto_battle(end_match=map_re, has_dialog=True)
@@ -49,12 +49,12 @@ class ClearMapTask(BaseGfTask):
                         self.skip_dialogs(end_match=map_re)
                     if last_clicked:
                         self.log_debug(f'重新点击上一次关卡: {last_clicked.name}')
-                        self.sleep(1)
                         self.wait_click_ocr(match=last_clicked.name, time_out=3, log=True, after_sleep=1)
-                        self.back()
+                        self.back(after_sleep=2)
                 else:
-                    self.back()
+                    self.back(after_sleep=2)
             self.sleep(1)
+            self.find_one()
 # from ok import Logger
 # from src.tasks.BaseGfTask import BaseGfTask, map_re
 #
