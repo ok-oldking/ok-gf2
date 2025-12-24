@@ -284,17 +284,14 @@ class DailyTask(BaseGfTask):
     def gongongqu(self):
         self.info_set('current_task', 'public area')
         self.wait_click_ocr(match=['委托'], box='right', after_sleep=2.5, raise_if_not_found=True)
-        buttons = self.find_feature(feature_name='ggq_can_button', box='left',
-                                    horizontal_variance=1.0,
-                                    vertical_variance=1.0,
-                                    )
+        buttons = self.find_feature(feature_name='ggq_can_button', box='left')
         if not self.config.get('自主循环'):
             self.click(buttons[0])
             if self.wait_ocr(match=['最小'], time_out=4, settle_time=2, log=True):
                 self.wait_click_ocr(match=['确认'], after_sleep=2.5, raise_if_not_found=True)
-        self.click(0.042, 0.541, after_sleep=2)
+            self.back(after_sleep=2)
         self.click(buttons[1], after_sleep=2)
-        self.click(0.042, 0.541, after_sleep=2)
+        self.wait_pop_up(count=1)
         if len(buttons) > 2:
             self.click(buttons[2], after_sleep=2)
             self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=2, raise_if_not_found=False)
@@ -305,7 +302,6 @@ class DailyTask(BaseGfTask):
                 self.wait_click_ocr(match=['确认'], after_sleep=2) and \
                 self.wait_click_ocr(match=['循环结束'], time_out=600, box='top', after_sleep=2):
             self.wait_click_ocr(match=['确认'], after_sleep=2)
-        self.back()
         self.ensure_main(another_ver=self.another_ver)
 
     def shopping(self):

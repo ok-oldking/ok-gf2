@@ -54,7 +54,6 @@ class ClearMapTask(BaseGfTask):
                 else:
                     self.back(after_sleep=2)
             self.sleep(1)
-            self.find_one()
 # from ok import Logger
 # from src.tasks.BaseGfTask import BaseGfTask, map_re
 #
