@@ -1,4 +1,5 @@
 import re
+
 from ok import Logger
 from src.tasks.BaseGfTask import BaseGfTask, stamina_re
 
@@ -78,6 +79,7 @@ class WeeklyTask(BaseGfTask):
                                 self.auto_battle(has_dialog=True)
                             else:
                                 self.back(after_sleep=2)
+                            self.wait_ocr(match='极限峰值',box='top_right',time_out=15)
                             self.back(after_sleep=2)
                 break
             self.back()

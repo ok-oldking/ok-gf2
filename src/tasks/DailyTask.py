@@ -39,7 +39,8 @@ class DailyTask(BaseGfTask):
             '吃饭': '1.0',
             "社区每日": False,
             '邮件': True,
-            '闪耀星愿': True,
+            "情报补给": False,
+            '闪耀星愿': False,
             '活动自律': True,
             '活动层': True,
             '公共区/调度室': True,
@@ -76,7 +77,7 @@ class DailyTask(BaseGfTask):
                 time_out=90
             )),
             ('邮件', self.mail),
-            ('闪耀星愿', self.activities),
+            (['情报补给','闪耀星愿'], self.activities),
             ('活动自律', self.activity),
             ('活动层', self.free_time_layer),
             ('公共区/调度室', self.gongongqu),
@@ -89,10 +90,15 @@ class DailyTask(BaseGfTask):
         ]
 
         failed_tasks = []
-
         for key, func in tasks:
-            if key != "ensure_main" and not self.config.get(key):
-                continue
+            # -------- 关键逻辑开始 --------
+            if key != "ensure_main":
+                # 统一转为列表
+                keys = [key] if isinstance(key, str) else list(key)
+
+                # or 规则：任一为 True 即执行
+                if not any(self.config.get(k) for k in keys):
+                    continue
 
             result = func()  # 不捕获异常，异常自然向上传递
             if result is False:
@@ -165,21 +171,23 @@ class DailyTask(BaseGfTask):
     def activities(self):
         self.info_set('current_task', 'activity_stamina')
         self.wait_click_ocr(match=['活动'], box='bottom_right', after_sleep=0.5, raise_if_not_found=True)
-        if self.wait_click_ocr(match=['情报补给'], box='left', time_out=3,
-                               raise_if_not_found=False, after_sleep=1):
-            while self.wait_click_ocr(match=['领取'], box='bottom_right', time_out=3,
-                                      raise_if_not_found=False, after_sleep=1):
-                self.wait_pop_up(time_out=6)
-        self.wait_click_ocr(match=[re.compile("闪耀星愿")], box='left', time_out=3, settle_time=2)
-        self.wait_click_ocr(match=['前往'], box='right', time_out=3, settle_time=2)
-        if self.wait_click_ocr(match=['开始作战'], box='bottom_right', time_out=3, settle_time=2, after_sleep=2):
-            if not self.wait_click_ocr(match=['取消'], time_out=1, after_sleep=2):
-                self.auto_battle(need_click_auto=True)
-                self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, settle_time=2)
-            else:
-                self.ensure_main(another_ver=self.another_ver)
-                return
-        self.fast_combat(click_all=True, set_cost=1)
+        if self.config.get("情报补给"):
+            if self.wait_click_ocr(match=['情报补给'], box='left', time_out=3,
+                                   raise_if_not_found=False, after_sleep=1):
+                while self.wait_click_ocr(match=['领取'], box='bottom_right', time_out=3,
+                                          raise_if_not_found=False, after_sleep=1):
+                    self.wait_pop_up(time_out=6)
+        if self.config.get('闪耀心愿'):
+            self.wait_click_ocr(match=[re.compile("闪耀星愿")], box='left', time_out=3, settle_time=2)
+            self.wait_click_ocr(match=['前往'], box='right', time_out=3, settle_time=2)
+            if self.wait_click_ocr(match=['开始作战'], box='bottom_right', time_out=3, settle_time=2, after_sleep=2):
+                if not self.wait_click_ocr(match=['取消'], time_out=1, after_sleep=2):
+                    self.auto_battle(need_click_auto=True)
+                    self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, settle_time=2)
+                else:
+                    self.ensure_main(another_ver=self.another_ver)
+                    return
+            self.fast_combat(click_all=True, set_cost=1)
         self.ensure_main(another_ver=self.another_ver)
 
     def claim_quest(self):
