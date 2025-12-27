@@ -3,8 +3,7 @@ import threading
 import time
 from typing import Union, List
 
-from ok import BaseTask, find_boxes_by_name, Box
-from ok import Logger
+from ok import BaseTask, find_boxes_by_name, Box, Logger
 
 logger = Logger.get_logger(__name__)
 pop_ups = ['点击空白处关闭', '点击屏幕任意位置继续', '点击任意位置继续']
@@ -23,9 +22,9 @@ def parse_time_option(option: str) -> list[float]:
 
 class BaseGfTask(BaseTask):
 
-    def ensure_main(self, recheck_time=1, time_out=30, esc=True, another_ver=False):
+    def ensure_main(self, recheck_time=1, time_out=30, esc=True):
         self.info_set('current_task', 'go_to_main')
-        if not self.wait_until(lambda: self.is_main(recheck_time=recheck_time, esc=esc, another_ver=another_ver),
+        if not self.wait_until(lambda: self.is_main(recheck_time=recheck_time, esc=esc),
                                time_out=time_out):
             raise Exception("请从游戏主页进入")
 
@@ -57,7 +56,8 @@ class BaseGfTask(BaseTask):
             self.next_frame()
         raise Exception('跳过剧情超时!')
 
-    def auto_battle(self, end_match=None, end_box=None, has_dialog=False, need_click_auto=False,has_dialog_behind_start=False):
+    def auto_battle(self, end_match=None, end_box=None, has_dialog=False, need_click_auto=False,
+                    has_dialog_behind_start=False):
         self.info_set('current_task', 'auto battle')
         result = self.skip_dialogs(end_match=['作战开始', '行动结束'], end_box='bottom', time_out=120,
                                    has_dialog=has_dialog)
@@ -76,10 +76,10 @@ class BaseGfTask(BaseTask):
                 # start_result = self.wait_ocr(match=['行动结束'], box='bottom_right',
                 #                              raise_if_not_found=False, time_out=15)
             if not start_result and has_dialog_behind_start:
-                start_result=self.skip_dialogs(end_match=['作战开始', '行动结束'], end_box='bottom', time_out=120,
-                                   has_dialog=has_dialog)
-                if self.wait_ocr(match='注意',box='top'):
-                    self.wait_click_ocr(match='取消',after_sleep=2)
+                start_result = self.skip_dialogs(end_match=['作战开始', '行动结束'], end_box='bottom', time_out=120,
+                                                 has_dialog=has_dialog)
+                if self.wait_ocr(match='注意', box='top'):
+                    self.wait_click_ocr(match='取消', after_sleep=2)
             if start_result and need_click_auto:
                 self.sleep(0.5)
                 if self.is_adb():
@@ -124,7 +124,7 @@ class BaseGfTask(BaseTask):
                     break
         self.sleep(2)
 
-    def is_main(self, recheck_time=0.0, esc=True, another_ver=False):
+    def is_main(self, recheck_time=0.0, esc=True):
         boxes = self.ocr(match=['整备室', '公共区', '活动层', re.compile('招募')], box='right', log=True)
         self.log_info(f'is main {len(boxes)} {boxes}')
         if len(boxes) == 3:
@@ -141,11 +141,7 @@ class BaseGfTask(BaseTask):
             self.click(box, after_sleep=2)
             return False
         if esc:
-            if another_ver:
-                self.back(after_sleep=2)
-            else:
-                if self.check_interval(2):
-                    self.back()
+            self.back(after_sleep=2)
         self.next_frame()
         return None
 
@@ -174,7 +170,7 @@ class BaseGfTask(BaseTask):
         if self.debug:
             self.screenshot('free_layer_click', frame=frame)
 
-    def click_with_key(self, hold_key, result, delay1=1, delay2=0.5):
+    def click_with_key(self, hold_key, result, delay1=1, delay2=0.5, after_sleep=0):
         def start_task1():
             self.send_key(key=hold_key, down_time=delay1)
 
@@ -188,6 +184,7 @@ class BaseGfTask(BaseTask):
         t2.start()
         t1.join()
         t2.join()
+        self.sleep(after_sleep)
 
     def find_top_right_count(self):
         result = self.ocr(0.89, 0.01, 0.99, 0.1, match=re.compile(r"^\d+/\d+$"), box='top_right')
@@ -212,20 +209,27 @@ class BaseGfTask(BaseTask):
             self.back()
             self.sleep(2)
 
-    def is_free_layer(self):
-        for i in range(2):
-            result = self.wait_ocr(match=['Esc', 'P', 'M', 'F1', 'F2', 'F3', 'F4'], settle_time=5,
-                                   time_out=60, box='top')
-            if result:
-                if len(result) >= 5:
-                    return True
+    def is_free_layer(self, time_out=20, every_time=1):
+        max_count = int(time_out / every_time)
+
+        for _ in range(max_count):
+            result = self.wait_ocr(
+                match=['Esc', 'P', 'M', 'F1', 'F2', 'F3', 'F4'],
+                settle_time=every_time,
+                box='top',
+                time_out=0
+            )
+
+            if result and len(result) >= 5:
+                return True
+
         return False
 
     def fast_combat(self, *, set_cost, battle_max=10, plus_x=0.616, plus_y=0.52, click_all=False,
                     activity=False):
         self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, raise_if_not_found=True)
-        if self.wait_ocr(match=re.compile('坍塌晶条'),log=True):
-            self.wait_click_ocr(match=['取消'],  after_sleep=2, raise_if_not_found=True)
+        if self.wait_ocr(match=re.compile('坍塌晶条'), log=True):
+            self.wait_click_ocr(match=['取消'], after_sleep=2, raise_if_not_found=True)
             self.wait_ocr(match=['自律'], box='bottom_right', raise_if_not_found=True)
             return 0
         if activity:

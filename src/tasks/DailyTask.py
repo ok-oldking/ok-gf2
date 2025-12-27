@@ -14,7 +14,6 @@ class DailyTask(BaseGfTask):
             该模块总启动配置
         """
         super().__init__(*args, **kwargs)
-        self.another_ver = False
         self.name = "一键日常"
         self.description = "收菜"
 
@@ -30,7 +29,6 @@ class DailyTask(BaseGfTask):
         """
         self.default_config.update({
             '已确认启用游戏内全局自动功能': False,
-            '出现反复横跳错误可尝试开启此项': False,
             '当前物资关卡名称': '铸碑者的黎明',
             '体力本': "军备解析",
             '用户名': "",
@@ -68,16 +66,14 @@ class DailyTask(BaseGfTask):
     def run(self):
         if not self.config.get('已确认启用游戏内全局自动功能'):
             self.confirm_auto_battle_up()
-        self.another_ver = self.config.get('出现反复横跳错误可尝试开启此项')
         tasks = [
             ("社区每日", self.community_daily),
             ("ensure_main", lambda: self.ensure_main(
-                another_ver=self.another_ver,
                 recheck_time=2,
                 time_out=90
             )),
             ('邮件', self.mail),
-            (['情报补给','闪耀星愿'], self.activities),
+            (['情报补给', '闪耀星愿'], self.activities),
             ('活动自律', self.activity),
             ('活动层', self.free_time_layer),
             ('公共区/调度室', self.gongongqu),
@@ -130,43 +126,64 @@ class DailyTask(BaseGfTask):
     def go_drink(self):
         down_times = parse_time_option((self.config.get('喝水')))
         self.press_keys_sequence(['a', 'w', 'd'], down_times, sleep_between=0.5)
-        self.sleep(1)
 
     def go_eat(self):
         down_time = float(self.config.get('吃饭'))
         self.press_keys_sequence(['s', 'd'], [down_time, 0], sleep_between=1)
-        self.sleep(1)
+
+    def do_food_flow(
+            self,
+            *,
+            enter_func,
+            entry_match,
+            main_btn,
+            second_btn,
+            skip_end_match,
+            need_extra_confirm=False
+    ):
+        enter_func()
+
+        if result := self.wait_ocr(match=entry_match, time_out=3):
+            self.click_with_key('alt', result)
+
+        if self.wait_click_ocr(match=main_btn, box='bottom_right', time_out=10):
+            if self.wait_click_ocr(match=second_btn, time_out=3):
+                if need_extra_confirm:
+                    self.wait_click_ocr(match='确认', time_out=3)
+                self.skip_dialogs(end_match=skip_end_match, time_out=60)
+                self.wait_click_ocr(match='确认', time_out=3)
+                self.wait_pop_up(count=1)
+        else:
+            self.back()
 
     def free_time_layer(self):
         self.info_set('current_task', 'free_time_layer')
-        for i in range(2):
-            self.wait_click_ocr(match='活动层', box='right', after_sleep=10, raise_if_not_found=True)
+        for i in range(3):
+            self.wait_click_ocr(match='活动层', box='right', time_out=2, raise_if_not_found=True)
             if self.is_free_layer():
-                self.sleep(2)
                 if i == 0:
-                    self.go_drink()
-                    if result := self.wait_ocr(match=re.compile('茶歇一刻')):
-                        self.click_with_key('alt', result)
-                    if self.wait_click_ocr(match='制作', box='bottom_right', after_sleep=0.5, time_out=10):
-                        if self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2):
-                            self.skip_dialogs(end_match=['饮品加成', '确认'], time_out=60)
-                            self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2)
-                            self.wait_pop_up(count=1)
-                    else:
-                        self.back(after_sleep=2)
+                    self.do_food_flow(
+                        enter_func=self.go_drink,
+                        entry_match=re.compile('茶歇一刻'),
+                        main_btn='制作',
+                        second_btn='确认',
+                        skip_end_match=['饮品加成', '确认'],
+                        need_extra_confirm=False
+                    )
+
                 else:
-                    self.go_eat()
-                    if result := self.wait_ocr(match=re.compile('美味烹调')):
-                        self.click_with_key('alt', result)
-                    if self.wait_click_ocr(match='下一步', box='bottom_right', after_sleep=0.5, time_out=10):
-                        if self.wait_click_ocr(match='确认邀请', box='bottom_right', after_sleep=0.5, time_out=2):
-                            self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2)
-                            self.skip_dialogs(end_match=['前往战役', '确认'], time_out=60)
-                            self.wait_click_ocr(match='确认', after_sleep=0.5, time_out=2)
-                            self.wait_pop_up(count=1)
-                    else:
-                        self.back(after_sleep=2)
-            self.ensure_main(another_ver=self.another_ver, time_out=60)
+                    self.do_food_flow(
+                        enter_func=self.go_eat,
+                        entry_match=re.compile('美味烹调'),
+                        main_btn='下一步',
+                        second_btn='确认邀请',
+                        skip_end_match=['前往战役', '确认'],
+                        need_extra_confirm=True
+                    )
+
+            else:
+                self.log_error('没检测到活动层页面')
+            self.ensure_main(time_out=60)
 
     def activities(self):
         self.info_set('current_task', 'activity_stamina')
@@ -185,10 +202,10 @@ class DailyTask(BaseGfTask):
                     self.auto_battle(need_click_auto=True)
                     self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, settle_time=2)
                 else:
-                    self.ensure_main(another_ver=self.another_ver)
+                    self.ensure_main()
                     return
             self.fast_combat(click_all=True, set_cost=1)
-        self.ensure_main(another_ver=self.another_ver)
+        self.ensure_main()
 
     def claim_quest(self):
         self.info_set('current_task', 'claim_quest')
@@ -205,7 +222,7 @@ class DailyTask(BaseGfTask):
                 pass
             else:
                 self.log_error("委托未领取")
-        self.ensure_main(another_ver=self.another_ver)
+        self.ensure_main()
 
     def mail(self):
         self.info_set('current_task', 'mail')
@@ -214,7 +231,7 @@ class DailyTask(BaseGfTask):
         else:
             self.click(0.06, 0.7)
         self.wait_click_ocr(match=['领取全部'], box='bottom_left', time_out=4, after_sleep=2, raise_if_not_found=False)
-        self.ensure_main(another_ver=self.another_ver)
+        self.ensure_main()
 
     def xunlu(self):
         self.info_set('current_task', 'xunlu')
@@ -223,7 +240,7 @@ class DailyTask(BaseGfTask):
                                 raise_if_not_found=True, after_sleep=1)
             self.wait_click_ocr(match=['一键领取', '领取全部'], box='bottom_right', time_out=4,
                                 raise_if_not_found=False, after_sleep=1)
-            self.ensure_main(another_ver=self.another_ver)
+            self.ensure_main()
 
     def activity(self):
         activity_wuzi_names = str(self.config.get('当前物资关卡名称')).split(
@@ -235,7 +252,7 @@ class DailyTask(BaseGfTask):
             if activities := self.wait_ocr(match=['开启中'], box='bottom_left', time_out=4):
                 activity_count = 0
                 for activity in activities:
-                    self.ensure_main(another_ver=self.another_ver)
+                    self.ensure_main()
                     self.click(to_activity_page, after_sleep=2)
                     self.click(activity)
                     if activity_count >= len(activity_wuzi_names):
@@ -267,7 +284,7 @@ class DailyTask(BaseGfTask):
                             self.fast_combat(set_cost=1, battle_max=6, activity=True)
             else:
                 self.log_info("找不到开启的活动")
-        self.ensure_main(another_ver=self.another_ver)
+        self.ensure_main()
 
     def find_activities(self):
         return self.wait_ocr(match=[re.compile(r'^\d+天\d+小时')], box='bottom_left',
@@ -310,7 +327,7 @@ class DailyTask(BaseGfTask):
                 self.wait_click_ocr(match=['确认'], after_sleep=2) and \
                 self.wait_click_ocr(match=['循环结束'], time_out=600, box='top', after_sleep=2):
             self.wait_click_ocr(match=['确认'], after_sleep=2)
-        self.ensure_main(another_ver=self.another_ver)
+        self.ensure_main()
 
     def shopping(self):
         self.info_set('current_task', 'shopping')
@@ -331,7 +348,7 @@ class DailyTask(BaseGfTask):
                 self.sleep(1)
         if self.config.get('商店心愿单购买'):
             self.buy_others()
-        self.ensure_main(another_ver=self.another_ver)
+        self.ensure_main()
 
     def buy_others(self):
         self.info_set('current_task', '心愿单购买')
@@ -347,7 +364,7 @@ class DailyTask(BaseGfTask):
 
     def arena(self):
         if self.config.get('自主循环'):
-            self.ensure_main(another_ver=self.another_ver)
+            self.ensure_main()
             return
         self.info_set('current_task', 'arena')
         self.wait_click_ocr(match=re.compile('战役推进'), box='top_right', after_sleep=1, raise_if_not_found=True)
@@ -369,11 +386,11 @@ class DailyTask(BaseGfTask):
         #         self.wait_pop_up(time_out=4)
         if self.wait_click_ocr(match=['周期奖励'], box='left', after_sleep=1, raise_if_not_found=True):
             self.wait_click_ocr(match=['一键领取'], after_sleep=1, raise_if_not_found=False)
-        self.ensure_main(another_ver=self.another_ver)
+        self.ensure_main()
 
     def bingqi(self):
         if self.config.get('自主循环'):
-            self.ensure_main(another_ver=self.another_ver)
+            self.ensure_main()
             return
         self.info_set('current_task', 'bingqi')
         self.wait_click_ocr(match=re.compile('战役推进'), box='top_right', after_sleep=1, raise_if_not_found=True)
@@ -388,7 +405,7 @@ class DailyTask(BaseGfTask):
             self.wait_click_ocr(match=['匹配'], box='bottom', after_sleep=0.5, raise_if_not_found=True)
             self.auto_battle(end_match='匹配')
             self.sleep(2)
-        self.ensure_main(another_ver=self.another_ver)
+        self.ensure_main()
 
     def guild(self):
         self.info_set('current_task', 'guild')
@@ -414,7 +431,7 @@ class DailyTask(BaseGfTask):
             self.wait_pop_up()
         self.back()
         self.sleep(1)
-        self.ensure_main(another_ver=self.another_ver)
+        self.ensure_main()
 
     def chenyan(self):
         if not self.config.get('尘烟'):
@@ -457,34 +474,74 @@ class DailyTask(BaseGfTask):
 
         self.wait_click_ocr(match='助战', box='bottom_right', settle_time=1, after_sleep=1, raise_if_not_found=True)
         mapping = {'威玛西娜': '物理', '可露凯': '酸蚀', '春田': '浊刻', '莱妮': '物理', '妮基塔': '冷凝',
-                   '玛绮朵': '浊刻', '琳德': '酸蚀', '洛贝拉': '物理', '托洛洛': '浊刻', '琼玖': '燃烧',
-                   'jiangyu': '电导', 'klukai': '酸蚀', 'leva': '电导', 'nikketa': '浊刻', 'Makiatto': '冷凝',
-                   'qiongjiu': '燃烧', 'tololo': '浊刻', '罗蕾莱': '燃烧'}
-        priority = ['威玛西娜', '可露凯', '罗蕾莱', '春田', '莱妮', '妮基塔', '玛绮朵', '洛贝拉', '托洛洛', '琼玖',
-                    'jiangyu', 'klukai', 'leva', 'nikketa', 'Makiatto', 'qiongjiu', 'tololo']
-        a_break = False
-        for m in [mapping[i] for i in priority]:
-            if a_break:
-                break
-            self.wait_click_ocr(match=m, time_out=2)
-            self.sleep(2)
+                   '玛绮朵': '浊刻', '洛贝拉': '物理', '托洛洛': '浊刻', '琼玖': '燃烧', '罗蕾莱': '燃烧',
+                   '夏安': '物理'}
+        priority = ['威玛西娜', '可露凯', '夏安', '罗蕾莱', '春田', '莱妮', '妮基塔', '玛绮朵', '洛贝拉', '托洛洛',
+                    '琼玖']
+        selected = False
+        my_chars = []
+
+        for name, m in [(i, mapping[i]) for i in priority]:
+            self.wait_click_ocr(match=m, time_out=2, after_sleep=2)
+
             chars = self.ocr(0.18, 0.27, 0.82, 0.79, match=re.compile(r'^\D*$'))
-            my_chars = []
-            sorted_chars = sort_characters_by_priority(chars, priority)
-            for char in sorted_chars:
-                if char.name in my_chars:
-                    continue
-                self.click(char, after_sleep=1)
-                join = self.ocr(match='入队', box='bottom_right')
-                if join:
+            solved_chars = [char for char in chars if char.name == name]
+
+            if not solved_chars:
+                continue
+
+            self.click(solved_chars[0], after_sleep=1)
+
+            join = self.ocr(match='入队', box='bottom_right')
+            if not join:
+                continue
+
+            self.click_box(join, after_sleep=1)
+
+            if self.ocr(box='bottom_right', match="确认"):
+                my_chars.append(name)
+                self.back(after_sleep=1)
+                self.log_info(f'duplicate char {my_chars}')
+            else:
+                selected = True
+                break
+        if not selected:
+            self.log_info('no priority char joined, fallback start')
+
+            attr_order = ['物理', '酸蚀', '浊刻', '燃烧', '冷凝', '电导']
+
+            for attr in attr_order:
+                self.wait_click_ocr(match=attr, time_out=2, after_sleep=2)
+
+                chars = self.ocr(
+                    0.18, 0.27, 0.82, 0.79,
+                    match=re.compile(r'^\D*$')
+                )
+
+                for char in chars:
+                    if char.name in my_chars:
+                        continue
+
+                    self.click(char, after_sleep=1)
+
+                    join = self.ocr(match='入队', box='bottom_right')
+                    if not join:
+                        continue
+
                     self.click_box(join, after_sleep=1)
+
                     if self.ocr(box='bottom_right', match="确认"):
                         my_chars.append(char.name)
                         self.back(after_sleep=1)
-                        self.log_info(f'duplicate char {my_chars}')
+                        self.log_info(f'duplicate char {char.name}')
                     else:
-                        a_break = True
+                        self.log_info(f'fallback joined char: {char.name}')
+                        selected = True
                         break
+
+                if selected:
+                    break
+
         self.wait_click_ocr(match='确定', box='bottom_right')
         self.auto_battle('开始作战', 'bottom_right')
 
@@ -573,7 +630,7 @@ class DailyTask(BaseGfTask):
 
     def battle(self):
         if self.config.get('自主循环'):
-            self.ensure_main(another_ver=self.another_ver)
+            self.ensure_main()
             return
         self.info_set('current_task', 'battle')
         self.wait_click_ocr(match=re.compile('战役推进'), box='top_right', after_sleep=0.5, raise_if_not_found=True)
@@ -606,7 +663,7 @@ class DailyTask(BaseGfTask):
                     remaining = self.fast_combat(plus_x=0.69, plus_y=0.59, set_cost=cost_dict[target])
                 else:
                     remaining = self.fast_combat(set_cost=cost_dict.get(target, None))
-        self.ensure_main(another_ver=self.another_ver)
+        self.ensure_main()
 
 
 def sort_characters_by_priority(chars, priority):

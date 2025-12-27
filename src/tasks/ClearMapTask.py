@@ -108,4 +108,3 @@ class ClearMapTask(BaseGfTask):
                 else:
                     self.back(after_sleep=2)
             self.sleep(1)
-

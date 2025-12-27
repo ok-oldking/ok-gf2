@@ -25,12 +25,12 @@ class WeeklyTask(BaseGfTask):
                                         'options': self.stamina_options}
 
     def run(self):
-        self.ensure_main(another_ver=self.another_ver, recheck_time=2, time_out=90)
+        self.ensure_main(recheck_time=2, time_out=90)
         self.another_ver = self.config.get('出现反复横跳错误可尝试开启此项')
         tasks = [
             ('首领挑战', self.boss_fast),
             ('峰值推定', self.peak_estimate_tion),
-            ('扩编实练',self.deep_battle)
+            ('扩编实练', self.deep_battle)
         ]
         for key, func in tasks:
             if self.config.get(key):
@@ -44,7 +44,7 @@ class WeeklyTask(BaseGfTask):
         self.wait_click_ocr(match=re.compile('模拟作战'), box='top_right', raise_if_not_found=True)
         self.wait_click_ocr(match=re.compile('首领挑战'), raise_if_not_found=True)
         self.fast_combat(set_cost=1, click_all=True)
-        self.ensure_main(another_ver=self.another_ver)
+        self.ensure_main()
 
     def peak_estimate_tion(self):
         self.info_set('current_task', 'peak_estimate_tion')
@@ -79,11 +79,11 @@ class WeeklyTask(BaseGfTask):
                                 self.auto_battle(has_dialog=True)
                             else:
                                 self.back(after_sleep=2)
-                            self.wait_ocr(match='极限峰值',box='top_right',time_out=15)
+                            self.wait_ocr(match='极限峰值', box='top_right', time_out=15)
                             self.back(after_sleep=2)
                 break
             self.back()
-        self.ensure_main(another_ver=self.another_ver)
+        self.ensure_main()
 
     def deep_battle(self):
         self.info_set('current_task', 'deep_battle')
@@ -91,10 +91,10 @@ class WeeklyTask(BaseGfTask):
         self.wait_click_ocr(match=re.compile('模拟作战'), box='top_right', raise_if_not_found=True, after_sleep=2)
         self.wait_click_ocr(match=re.compile('扩编实练'), raise_if_not_found=True, after_sleep=2)
         self.wait_pop_up(count=1)
-        results=None
+        results = None
         if result := self.wait_ocr(match=stamina_re, box='bottom_right', time_out=2):
             result = result[0].name.split("/")
-            if len(result) == 2 and result[0]==result[1]:
+            if len(result) == 2 and result[0] == result[1]:
                 pass
             else:
                 results = self.wait_ocr(match="特殊增强", settle_time=2, log=True)
@@ -103,16 +103,15 @@ class WeeklyTask(BaseGfTask):
             one_bool = False
             for result in results:
                 self.click(result, after_sleep=2)
-                self.wait_click_ocr(match="开始作战",box='bottom_right', after_sleep=2, log=True)
-                self.auto_battle(has_dialog=True,need_click_auto=True,has_dialog_behind_start=True)
+                self.wait_click_ocr(match="开始作战", box='bottom_right', after_sleep=2, log=True)
+                self.auto_battle(has_dialog=True, need_click_auto=True, has_dialog_behind_start=True)
                 self.wait_ocr(match="扩编实练", box='left', time_out=15, log=True)
-                if not one_bool :
+                if not one_bool:
                     if self.wait_ocr(match="实练奖励", box='top', time_out=5, log=True):
                         self.back(after_sleep=2)
                     one_bool = True
-                if result ==results[-1]:
+                if result == results[-1]:
                     self.wait_pop_up(count=1)
-                    self.wait_click_ocr(match='当期实练奖励',box='bottom_right', after_sleep=2)
-                    self.wait_click_ocr(match=re.compile('领取'),box='bottom_right', after_sleep=2)
-        self.ensure_main(another_ver=self.another_ver)
-
+                    self.wait_click_ocr(match='当期实练奖励', box='bottom_right', after_sleep=2)
+                    self.wait_click_ocr(match=re.compile('领取'), box='bottom_right', after_sleep=2)
+        self.ensure_main()

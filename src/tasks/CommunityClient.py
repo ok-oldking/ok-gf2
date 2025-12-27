@@ -21,11 +21,11 @@ class CommunityClient(BaseTask):
 
     # ================== 通用请求 ==================
     def request_json(
-        self,
-        method: str,
-        url: str,
-        headers: dict | None = None,
-        data: dict | None = None,
+            self,
+            method: str,
+            url: str,
+            headers: dict | None = None,
+            data: dict | None = None,
     ) -> Optional[dict]:
         try:
             resp = requests.request(
@@ -174,7 +174,7 @@ class CommunityClient(BaseTask):
         if data.get("Code") != 0:
             self.log_info(f"获取积分失败:{data}")
             return None
-        score=data.get("data", {}).get("user", {}).get("score")
+        score = data.get("data", {}).get("user", {}).get("score")
         self.log_info(f"积分剩余:{score}")
         return score
 
@@ -257,8 +257,8 @@ class CommunityClient(BaseTask):
         self.share_topic(auth_token, topics[0])
         self.log_info("每日任务完成")
 
-    def main(self,user,pwd):
-        token = self.login(user,pwd)
+    def main(self, user, pwd):
+        token = self.login(user, pwd)
         if token:
             self.daily_tasks(token)
             self.auto_exchange(token)
