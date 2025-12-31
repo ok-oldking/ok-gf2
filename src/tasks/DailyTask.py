@@ -194,7 +194,7 @@ class DailyTask(BaseGfTask):
                 while self.wait_click_ocr(match=['领取'], box='bottom_right', time_out=3,
                                           raise_if_not_found=False, after_sleep=1):
                     self.wait_pop_up(time_out=6)
-        if self.config.get('闪耀心愿'):
+        if self.config.get('闪耀星愿'):
             self.wait_click_ocr(match=[re.compile("闪耀星愿")], box='left', time_out=3, settle_time=2)
             self.wait_click_ocr(match=['前往'], box='right', time_out=3, settle_time=2)
             if self.wait_click_ocr(match=['开始作战'], box='bottom_right', time_out=3, settle_time=2, after_sleep=2):
