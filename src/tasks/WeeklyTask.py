@@ -11,11 +11,9 @@ class WeeklyTask(BaseGfTask):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.another_ver = None
         self.name = "周常"
         self.description = ""
         self.default_config.update({
-            '出现反复横跳错误可尝试开启此项': False,
             '首领挑战': True,
             '峰值推定': True,
             '扩编实练': False,
@@ -26,7 +24,6 @@ class WeeklyTask(BaseGfTask):
 
     def run(self):
         self.ensure_main(recheck_time=2, time_out=90)
-        self.another_ver = self.config.get('出现反复横跳错误可尝试开启此项')
         tasks = [
             ('首领挑战', self.boss_fast),
             ('峰值推定', self.peak_estimate_tion),
@@ -79,8 +76,8 @@ class WeeklyTask(BaseGfTask):
                                 self.auto_battle(has_dialog=True)
                             else:
                                 self.back(after_sleep=2)
-                            self.wait_ocr(match='极限峰值', box='top_right', time_out=15)
-                            self.back(after_sleep=2)
+                            if self.wait_ocr(match=re.compile('激化阶群'), box='top_right', time_out=3):
+                                self.back(after_sleep=2)
                 break
             self.back()
         self.ensure_main()
@@ -113,5 +110,5 @@ class WeeklyTask(BaseGfTask):
                 if result == results[-1]:
                     self.wait_pop_up(count=1)
                     self.wait_click_ocr(match='当期实练奖励', box='bottom_right', after_sleep=2)
-                    self.wait_click_ocr(match=re.compile('领取'), box='bottom_right', after_sleep=2)
+                    self.wait_click_ocr(match='一键领取', box='bottom_right', after_sleep=2)
         self.ensure_main()

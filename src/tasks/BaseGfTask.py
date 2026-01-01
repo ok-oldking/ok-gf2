@@ -21,6 +21,21 @@ def parse_time_option(option: str) -> list[float]:
 
 
 class BaseGfTask(BaseTask):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.roles_dict = {
+            "物理": ["夏安", "莱妮", "威玛西娜", "巴希达", "幼熙", "绯", "波波沙", "乌尔丽德", "莉塔拉", "黛烟",
+                     "维普蕾", "闪电"],
+            "燃烧": ["罗蕾莱", "樱花", "刘易斯", "秋桦", "佩莉", "维克托", "桑朵莱希", "科谢尼娅", "琼玖", "奇塔",
+                     "夏克里", "克罗丽科"],
+            "电导": ["莱娅", "安朵丝", "比悠卡", "绛雨", "莱娜", "莫辛纳甘"],
+            "冷凝": ["海伦", "埃芙", "洛贝拉", "杜莎妮", "索米", "洛塔", "玛绮朵"],
+            "浊刻": ["芙洛伦", "妮基塔", "春田", "朝晖", "塞布丽娜", "托洛洛", "寇尔芙"],
+            "酸蚀": ["翡图萨", "哈卜茜", "琳德", "米什缇", "可露凯", "纳甘", "佩里缇亚", "纳美西丝"]
+        }
+
+    def get_role_by_name(self, name):
+        return next((k for k, v in self.roles_dict.items() if name in v), None)
 
     def ensure_main(self, recheck_time=1, time_out=30, esc=True):
         self.info_set('current_task', 'go_to_main')
@@ -228,8 +243,8 @@ class BaseGfTask(BaseTask):
     def fast_combat(self, *, set_cost, battle_max=10, plus_x=0.616, plus_y=0.52, click_all=False,
                     activity=False):
         self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, raise_if_not_found=True)
-        if self.wait_ocr(match=re.compile('坍塌晶条'), log=True):
-            self.wait_click_ocr(match=['取消'], after_sleep=2, raise_if_not_found=True)
+        if self.wait_ocr(match=re.compile('坍塌晶条'), time_out=2, log=True):
+            self.wait_click_ocr(match=['取消'], after_sleep=2, time_out=2, raise_if_not_found=True)
             self.wait_ocr(match=['自律'], box='bottom_right', raise_if_not_found=True)
             return 0
         if activity:

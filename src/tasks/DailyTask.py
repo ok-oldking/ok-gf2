@@ -473,15 +473,12 @@ class DailyTask(BaseGfTask):
             self.click_relative(x_start + step * i, 0.45, after_sleep=0.2)
 
         self.wait_click_ocr(match='助战', box='bottom_right', settle_time=1, after_sleep=1, raise_if_not_found=True)
-        mapping = {'威玛西娜': '物理', '可露凯': '酸蚀', '春田': '浊刻', '莱妮': '物理', '妮基塔': '冷凝',
-                   '玛绮朵': '浊刻', '洛贝拉': '物理', '托洛洛': '浊刻', '琼玖': '燃烧', '罗蕾莱': '燃烧',
-                   '夏安': '物理'}
         priority = ['威玛西娜', '可露凯', '夏安', '罗蕾莱', '春田', '莱妮', '妮基塔', '玛绮朵', '洛贝拉', '托洛洛',
                     '琼玖']
         selected = False
         my_chars = []
 
-        for name, m in [(i, mapping[i]) for i in priority]:
+        for name, m in [(i, self.get_role_by_name(i)) for i in priority]:
             self.wait_click_ocr(match=m, time_out=2, after_sleep=2)
 
             chars = self.ocr(0.18, 0.27, 0.82, 0.79, match=re.compile(r'^\D*$'))
