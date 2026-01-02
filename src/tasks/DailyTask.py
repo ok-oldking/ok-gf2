@@ -189,22 +189,29 @@ class DailyTask(BaseGfTask):
         self.info_set('current_task', 'activity_stamina')
         self.wait_click_ocr(match=['活动'], box='bottom_right', after_sleep=0.5, raise_if_not_found=True)
         if self.config.get("情报补给"):
-            if self.wait_click_ocr(match=['情报补给'], box='left', time_out=3,
-                                   raise_if_not_found=False, after_sleep=1):
-                while self.wait_click_ocr(match=['领取'], box='bottom_right', time_out=3,
-                                          raise_if_not_found=False, after_sleep=1):
+            if self.wait_click_ocr(match=['情报补给'], box='left', time_out=3, raise_if_not_found=False, after_sleep=1):
+                while self.wait_click_ocr(match=['领取'], box='bottom_right', time_out=3, raise_if_not_found=False,
+                                          after_sleep=1):
                     self.wait_pop_up(time_out=6)
-        if self.config.get('闪耀星愿'):
-            self.wait_click_ocr(match=[re.compile("闪耀星愿")], box='left', time_out=3, settle_time=2)
-            self.wait_click_ocr(match=['前往'], box='right', time_out=3, settle_time=2)
-            if self.wait_click_ocr(match=['开始作战'], box='bottom_right', time_out=3, settle_time=2, after_sleep=2):
-                if not self.wait_click_ocr(match=['取消'], time_out=1, after_sleep=2):
-                    self.auto_battle(need_click_auto=True)
-                    self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, settle_time=2)
-                else:
-                    self.ensure_main()
-                    return
-            self.fast_combat(click_all=True, set_cost=1)
+        if not self.config.get('闪耀星愿'):
+            self.ensure_main()
+            return
+        if not self.wait_click_ocr(match=[re.compile("闪耀星愿")], box='left', time_out=3, settle_time=2):
+            self.ensure_main()
+            return
+
+        if not self.wait_click_ocr(match=['前往'], box='right', time_out=3, settle_time=2):
+            self.ensure_main()
+            return
+        if not self.wait_click_ocr(match=['开始作战'], box='bottom_right', time_out=3, settle_time=2, after_sleep=2):
+            self.ensure_main()
+            return
+        if self.wait_click_ocr(match=['取消'], time_out=1, after_sleep=2):
+            self.ensure_main()
+            return
+        self.auto_battle(need_click_auto=True)
+        self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, settle_time=2)
+        self.fast_combat(click_all=True, set_cost=1)
         self.ensure_main()
 
     def claim_quest(self):
