@@ -242,16 +242,24 @@ class BaseGfTask(BaseTask):
 
     def fast_combat(self, *, set_cost, battle_max=10, plus_x=0.616, plus_y=0.52, click_all=False,
                     activity=False):
-        self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, raise_if_not_found=True)
-        if self.wait_ocr(match=re.compile('坍塌晶条'), time_out=2, log=True):
-            self.wait_click_ocr(match=['取消'], after_sleep=2, time_out=2, raise_if_not_found=True)
-            self.wait_ocr(match=['自律'], box='bottom_right', raise_if_not_found=True)
-            return 0
         if activity:
             click_all = True
         if click_all:
             plus_x = 0.65
             plus_y = 0.52
+            self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, raise_if_not_found=True)
+            self.click(plus_x, plus_y)
+            self.wait_click_ocr(match=["确认"], after_sleep=0, raise_if_not_found=True)
+            self.wait_click_ocr(match=["取消"], time_out=2, raise_if_not_found=False)
+            self.wait_pop_up(count=1)
+            self.wait_ocr(match=['自律'], box='bottom_right', raise_if_not_found=True)
+            return 0
+
+        self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, raise_if_not_found=True)
+        if self.wait_ocr(match=re.compile('坍塌晶条'), time_out=2, log=True):
+            self.wait_click_ocr(match=['取消'], after_sleep=2, time_out=2, raise_if_not_found=True)
+            self.wait_ocr(match=['自律'], box='bottom_right', raise_if_not_found=True)
+            return 0
         boxes = self.ocr(log=True, threshold=0.8)
         if next_step := self.find_boxes(boxes, '下一步', "bottom_right"):
             self.click(next_step, after_sleep=1)
@@ -283,14 +291,11 @@ class BaseGfTask(BaseTask):
         self.info_set('can_fast_count', can_fast_count)
         self.info_set('click_battle_plus', 0)
         self.log_info(f'battle cost: {cost} current_stamina: {current} can_fast_count: {can_fast_count}')
-        if click_all:
+
+        for _ in range(can_fast_count - 1):
             self.click(plus_x, plus_y)
+            self.info_incr('click_battle_plus')
             self.sleep(0.2)
-        else:
-            for _ in range(can_fast_count - 1):
-                self.click(plus_x, plus_y)
-                self.info_incr('click_battle_plus')
-                self.sleep(0.2)
         self.sleep(1)
         remaining = current - can_fast_count * cost
         self.info_set('remaining_stamina', remaining)
