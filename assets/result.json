@@ -5,25 +5,46 @@
       "file_name": "images/ggq_can_button.png",
       "width": 36,
       "height": 36
+    },
+    {
+      "id": 2,
+      "file_name": "images/nomarl_face.png",
+      "width": 57,
+      "height": 50
     }
   ],
-    "categories": [
-        {
-            "id": 1,
-            "name": "ggq_can_button"
-        }
-    ],
-    "annotations": [
-        {
-            "id": 1,
-            "image_id": 1,
-            "category_id": 1,
-            "bbox": [
-                336,
-                500,
-                38,
-                38
-            ]
-        }
-    ]
+  "categories": [
+    {
+      "id": 1,
+      "name": "ggq_can_button"
+    },
+    {
+      "id": 2,
+      "name": "nomarl_face"
+    }
+  ],
+  "annotations": [
+    {
+      "id": 1,
+      "image_id": 1,
+      "category_id": 1,
+      "bbox": [
+        336,
+        500,
+        38,
+        38
+      ]
+    },
+    {
+      "id": 2,
+      "image_id": 2,
+      "category_id": 2,
+      "bbox": [
+        0,
+        0,
+        57,
+        50
+      ]
+    }
+  ]
 }
