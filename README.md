@@ -38,10 +38,6 @@
 
 ---
 
-### 是否是国际服  
-> 若勾选后无法正常执行 **公共区 / 调度室** 任务，请取消勾选。
-
-
 ![image](https://github.com/user-attachments/assets/6bd2ac34-fd40-4c74-9e8e-a0343818876d)
 
 ![image](https://github.com/user-attachments/assets/ae1ecd07-6608-478d-9226-40d4f8000a60)
