@@ -123,13 +123,17 @@ class DailyTask(BaseGfTask):
             "然后勾选本软件内一键日常内的确认项"
         )
 
-    def go_drink(self):
+    def go_drink(self, after_sleep=None):
         down_times = parse_time_option((self.config.get('喝水')))
         self.press_keys_sequence(['a', 'w', 'd'], down_times, sleep_between=0.5)
+        if after_sleep and after_sleep > 0:
+            self.sleep(after_sleep)
 
-    def go_eat(self):
+    def go_eat(self, after_sleep=None):
         down_time = float(self.config.get('吃饭'))
         self.press_keys_sequence(['s', 'd'], [down_time, 0], sleep_between=1)
+        if after_sleep and after_sleep > 0:
+            self.sleep(after_sleep)
 
     def do_food_flow(
             self,
@@ -139,22 +143,33 @@ class DailyTask(BaseGfTask):
             main_btn,
             second_btn,
             skip_end_match,
-            need_extra_confirm=False
+            need_extra_confirm=False,
+            need_again_test=False
     ):
-        enter_func()
-
-        if result := self.wait_ocr(match=entry_match, time_out=3):
-            self.click_with_key('alt', result)
-
-        if self.wait_click_ocr(match=main_btn, box='bottom_right', time_out=10):
-            if self.wait_click_ocr(match=second_btn, time_out=3):
-                if need_extra_confirm:
+        enter_func(after_sleep=1)
+        times = 1
+        if need_again_test:
+            times = 2
+        for attempt in range(times):
+            if result := self.wait_ocr(match=entry_match, time_out=3):
+                self.click_with_key('alt', result)
+            else:
+                return False
+            if self.wait_click_ocr(match=main_btn, box='bottom_right', time_out=10):
+                if self.wait_click_ocr(match=second_btn, time_out=3):
+                    if need_extra_confirm:
+                        self.wait_click_ocr(match='确认', time_out=3)
+                    self.skip_dialogs(end_match=skip_end_match, time_out=60)
                     self.wait_click_ocr(match='确认', time_out=3)
-                self.skip_dialogs(end_match=skip_end_match, time_out=60)
-                self.wait_click_ocr(match='确认', time_out=3)
-                self.wait_pop_up(count=1)
-        else:
-            self.back()
+                    self.wait_pop_up(count=1)
+                return True
+            else:
+                if need_again_test and attempt == 0:
+                    continue
+                else:
+                    self.back(after_sleep=2)
+                    return False
+        return False
 
     def free_time_layer(self):
         self.info_set('current_task', 'free_time_layer')
@@ -178,7 +193,8 @@ class DailyTask(BaseGfTask):
                         main_btn='下一步',
                         second_btn='确认邀请',
                         skip_end_match=['前往战役', '确认'],
-                        need_extra_confirm=True
+                        need_extra_confirm=True,
+                        need_again_test=True
                     )
 
             else:
@@ -323,7 +339,10 @@ class DailyTask(BaseGfTask):
                 self.wait_click_ocr(match=['确认'], after_sleep=2.5, raise_if_not_found=True)
             self.back(after_sleep=2)
         self.click(buttons[1], after_sleep=2)
-        self.wait_pop_up(count=1)
+        if self.wait_ocr(match='获得道具', box='top', time_out=2, log=True):
+            self.back(after_sleep=2)
+        else:
+            self.wait_pop_up(count=1)
         if len(buttons) > 2:
             self.click(buttons[2], after_sleep=2)
             self.wait_click_ocr(match=['再次派遣'], box='bottom', after_sleep=2, raise_if_not_found=False)
