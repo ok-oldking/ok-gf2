@@ -239,6 +239,21 @@ class BaseGfTask(BaseTask):
                 return True
 
         return False
+    def break_if_not_enough(self):
+        if self.wait_ocr(match=re.compile('坍塌晶条'), time_out=2, log=True):
+            self.wait_click_ocr(match=['取消'], after_sleep=2, time_out=2, raise_if_not_found=True)
+            return True
+        return False
+    def back_if_not_ocr_match(self,match,box=None,max_back_count=1,raise_if_not_found=False):
+        for count in range(max_back_count+1):
+            temp_raise_if_not_found = False
+            if count==max_back_count:
+                temp_raise_if_not_found = True
+            if self.wait_ocr(match=match, box=box,  raise_if_not_found=temp_raise_if_not_found):
+                return
+            else:
+                self.back(after_sleep=2)
+        return
 
     def fast_combat(self, *, set_cost, battle_max=10, plus_x=0.616, plus_y=0.52, click_all=False,
                     activity=False):
@@ -248,16 +263,18 @@ class BaseGfTask(BaseTask):
             plus_x = 0.65
             plus_y = 0.52
             self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, raise_if_not_found=True)
+            if self.break_if_not_enough():
+                self.wait_ocr(match=['自律'], box='bottom_right', raise_if_not_found=True)
+                return 0
             self.click(plus_x, plus_y)
-            self.wait_click_ocr(match=["确认"], after_sleep=0, raise_if_not_found=True)
+            self.wait_click_ocr(match=["确认"], after_sleep=0, raise_if_not_found=False)
             self.wait_click_ocr(match=["取消"], time_out=2, raise_if_not_found=False)
             self.wait_pop_up(count=1)
-            self.wait_ocr(match=['自律'], box='bottom_right', raise_if_not_found=True)
+            self.back_if_not_ocr_match(match=['自律'], box='bottom_right', raise_if_not_found=True)
             return 0
 
         self.wait_click_ocr(match=['自律'], box='bottom_right', after_sleep=2, raise_if_not_found=True)
-        if self.wait_ocr(match=re.compile('坍塌晶条'), time_out=2, log=True):
-            self.wait_click_ocr(match=['取消'], after_sleep=2, time_out=2, raise_if_not_found=True)
+        if self.break_if_not_enough():
             self.wait_ocr(match=['自律'], box='bottom_right', raise_if_not_found=True)
             return 0
         boxes = self.ocr(log=True, threshold=0.8)
